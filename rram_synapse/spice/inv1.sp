@@ -9,7 +9,7 @@ vs1 vdd gnd dc 1.1
 E   va gnd  vol='a'
 
 .TRAN 1n 10m SWEEP a LIN 10 0 1.
-.option post=2 nomod
+.option post=1 POST_VERSION=9601 method=gear
 
 ***********************************************************************
 
