@@ -39,6 +39,13 @@ class Synapses:
         Vd = np.repeat(Vd, self.output_size, axis=1)
         Vd = np.reshape(Vd, (-1, 1))
 
+        '''
+        for ii in range(self.input_size):
+            start = ii       * self.output_size
+            end =   (ii + 1) * self.output_size
+            assert( np.all(Vd[start:end] == Vd[start]) )
+        '''
+
         Vg = np.reshape(Vg, (-1, 1))
 
         Vc = np.reshape(Vc, (1, -1))
@@ -59,10 +66,11 @@ class Synapses:
         F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
         dwdt = ((self.U * self.RON * I) / self.D) * F
         self.W = np.clip(self.W + dwdt * dt, 1e-9, 9e-9)
-        # what should dwdt be ? 
         
+        # problem was we were not recomputing R!!!
+        self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         
         # I = np.sum(I, axis=0)
-        return I
+        return I, dwdt
         
         

@@ -94,7 +94,7 @@ for epoch in range(args.epochs):
         Vg = np.ones(shape=(LAYER1, LAYER2))
         Vc = np.zeros(shape=(LAYER2))
         
-        I = weights.step(Vd, Vg, Vc, 1e-9) 
+        I, _ = weights.step(Vd, Vg, Vc, 1e-9) 
         Z2 = np.sum(I, axis=0)
         # print (Z2)
         
@@ -123,7 +123,7 @@ for epoch in range(args.epochs):
         # Vc = 0.5 * (E > 0.)
         
         # will 1e-3 work as a learning rate ? 
-        I = weights.step(Vd, Vg, Vc, 1e-3)
+        I, dwdt = weights.step(Vd, Vg, Vc, 1e-3)
         DO = np.sum(I, axis=0)
         # print (I)
         # print (Vc)
@@ -141,24 +141,26 @@ for epoch in range(args.epochs):
         # pre - post = DW
         DR = pre - post
         # smaller R = larger W
-        DR = -DR
-        
-        # this idea dosnt work bc DW has a lot of zeros in it.
-        # print (np.sum(np.absolute(np.sign(DR) - np.sign(DW))))
-        # print (np.sign(DR), np.shape(DR))
-        # print (np.sign(DW), np.shape(DW))
-        # print (DW)
-        
+        # DR = -DR
+
         idx = np.where(np.absolute(DW) > 0)
-        sign_DR = np.sign(DR[idx])
-        sign_DW = np.sign(DW[idx])
-        num = np.sum(np.absolute(sign_DW))
+        num = np.sum(np.absolute(DW) > 0)
         
-        # print (np.shape(sign_DW), np.shape(sign_DR))
-        print (np.sum(DR[idx] > 0), np.sum(DW[idx] > 0))
-        print (np.sum(DR[idx] < 0), np.sum(DW[idx] < 0))
+        print (np.sum(dwdt[idx] > 0), np.sum(dwdt[idx] < 0))
+        print (np.sum(DR[idx] > 0), np.sum(DR[idx] < 0))
+        print (np.sum(DW[idx] > 0), np.sum(DW[idx] < 0))
+        
+        sign_dwdt = np.sign(-dwdt)
+        sign_DR = np.sign(-DR)
+        sign_DW = np.sign(DW)
+        
+        print (np.sum(sign_dwdt == sign_DW) / num)
         print (np.sum(sign_DR == sign_DW) / num)
-        print (num)
+        
+        print (E)
+        print (DO)
+        # print (sign_dwdt)
+        print (sign_DR)
         ##############################
      
         ##############################

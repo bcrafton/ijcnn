@@ -55,7 +55,6 @@ LAYER2 = 10
 
 weights = np.random.uniform(0.2, 0.2, size=(LAYER1, LAYER2))
 # weights = np.random.uniform(-1., 1., size=(LAYER1, LAYER2))
-bias = np.zeros(shape=(LAYER2))
 
 #######################################
 
@@ -80,7 +79,6 @@ for epoch in range(args.epochs):
         DB = E
         
         weights -= args.alpha * DW
-        bias -= args.alpha * DB
      
         acc = 1.0 * correct / (ex + 1)
         accs.append(acc)
