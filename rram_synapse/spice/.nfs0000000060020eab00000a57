@@ -1,0 +1,12 @@
+#Copyright (c) 1988-2012 by Synopsys, Inc.
+#
+#	CustomExplorer: Version G-2012.06
+#	Linux RHEL64 v4.8 May 24 2012 14:36:30
+#
+#Launch at Jan 09 2019 23:02:34
+#
+cx_load_preference /tools/synopsys/custom/g201206/etc/.cxrc
+cx_select_window {Console} 
+cx_select_menu_item {Console} {} {File.Open Waveform File...} 
+#WaveView is opened.
+cx_select_window {Console} 

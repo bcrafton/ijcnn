@@ -1,11 +1,11 @@
 
 *****************************
 * name drain gate source body class
-mnmos vd vg vs gnd nmos w=45n l=30n
+mnmos vd vg vs gnd nmos w=90n l=50n
 
 * name plus minus class
-* Rmem vs vc R='1meg + (100meg-1meg) * V(vscale)'
-Rmem vs vc 1meg
+Rmem vs vc R='1meg + (100meg-1meg) * V(vscale)'
+* Rmem vs vc 1meg
 
 Evd     vd     gnd vol='d'
 Evg     vg     gnd vol='g'
@@ -30,13 +30,17 @@ Evscale vscale gnd vol='scale'
 * vsvc vc     gnd pwl( 0 0 )
 
 *****************************
+
 .dc data=data1
 .option post=1 POST_VERSION=9601 method=BDF
-.probe i(Rmem)
+.probe i(Rmem) i(mnmos)
+
+* .print v(vd)
+
 *****************************
 
 .data data1
-d g c scale
++ d g c scale
 + 0.00 0.00 0.00 0.00
 + 0.00 0.00 0.00 0.07
 + 0.00 0.00 0.00 0.14
