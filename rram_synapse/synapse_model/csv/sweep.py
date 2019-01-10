@@ -6,14 +6,16 @@ vals = '+ d g c r\n'
 data = ''
 foot = '.enddata\n'
 
-v_sweep = np.linspace(0.0, 1.0, 15)
+d_sweep = np.linspace(0.0, 1.0, 15)
+g_sweep = np.linspace(0.0, 1.0, 15)
+c_sweep = np.linspace(-1.0, 1.0, 25)
 r_sweep = np.linspace(1e6, 100e6, 15)
 
-for a in v_sweep:
-    for b in v_sweep:
-        for c in v_sweep:
-            for d in r_sweep:
-                point = '+ %0.2f %0.2f %0.2f %0.0f\n' % (a, b, c, d)
+for d in d_sweep:
+    for g in g_sweep:
+        for c in c_sweep:
+            for r in r_sweep:
+                point = '+ %0.2f %0.2f %0.2f %0.0f\n' % (d, g, c, r)
                 data = data + point
 
 content = head + vals + data + foot

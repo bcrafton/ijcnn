@@ -11,7 +11,7 @@ try:
 except ImportError:
     import pickle
 
-print "loading data"
+print ("loading data")
 
 vd = np.genfromtxt('vd.csv', delimiter=',')
 vg = np.genfromtxt('vg.csv', delimiter=',')
@@ -19,7 +19,7 @@ vc = np.genfromtxt('vc.csv', delimiter=',')
 r  = np.genfromtxt('r.csv',  delimiter=',')
 i  = np.genfromtxt('i.csv',  delimiter=',')
 
-print "building interpolator"
+print ("building interpolator")
 
 x = np.transpose([vd, vg, vc, r])
 y = i

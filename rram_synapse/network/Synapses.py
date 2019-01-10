@@ -24,8 +24,8 @@ class Synapses:
         self.ROFF = 100e6
         self.P = 5            
 
-        # self.W = np.ones(shape=self.shape) * self.W0
-        self.W = np.random.uniform(low=1e-9, high=9e-9, size=shape)
+        self.W = np.ones(shape=self.shape) * self.W0
+        # self.W = np.random.uniform(low=1e-9, high=9e-9, size=shape)
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         
     def step(self, Vd, Vg, Vc, dt):
@@ -35,16 +35,21 @@ class Synapses:
         assert(np.shape(Vg) == self.shape)
         assert(np.shape(Vc) == (self.output_size,))
 
-        Vd = np.reshape(Vd, (1, -1))
-        Vd = np.repeat(Vd, self.output_size, axis=0)
+        Vd = np.reshape(Vd, (-1, 1))
+        Vd = np.repeat(Vd, self.output_size, axis=1)
         Vd = np.reshape(Vd, (-1, 1))
 
         Vg = np.reshape(Vg, (-1, 1))
 
-        Vc = np.reshape(Vc, (-1, 1))
-        Vc = np.repeat(Vc, self.input_size, axis=1)
+        Vc = np.reshape(Vc, (1, -1))
+        Vc = np.repeat(Vc, self.input_size, axis=0)
         Vc = np.reshape(Vc, (-1, 1))
 
+        # print (np.shape(Vd))
+        # print (np.shape(Vg))
+        # print (np.shape(Vc))
+
+        self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         r = np.reshape(self.R, (-1, 1))
         
         points = np.concatenate((Vd, Vg, Vc, r), axis=1)
@@ -54,6 +59,10 @@ class Synapses:
         F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
         dwdt = ((self.U * self.RON * I) / self.D) * F
         self.W = np.clip(self.W + dwdt * dt, 1e-9, 9e-9)
+        # what should dwdt be ? 
+        
+        
+        # I = np.sum(I, axis=0)
         return I
         
         
