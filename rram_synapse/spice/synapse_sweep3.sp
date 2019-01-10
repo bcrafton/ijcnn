@@ -30,7 +30,7 @@ Evc     vc     gnd vol='c'
 
 .dc data=data1
 .option post=1 POST_VERSION=9601 method=BDF
-.probe i(Rmem) i(mnmos)
+.probe i(Rmem) i(mnmos) r(Rmem)
 
 * .print v(vd)
 

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ROOT>
+  <info>
+    <version>Version G-2012.06</version>
+  </info>
+  <setup_common_data>
+    <project_name>cx_simulation</project_name>
+    <project_dir>/nethome/bcrafton3/ijcnn/rram_synapse/spice/cx_simulation</project_dir>
+  </setup_common_data>
+  <setup_lsf_opt/>
+  <setup_design/>
+  <setup_test>
+    <test></test>
+  </setup_test>
+  <setup_runlist/>
+  <macro/>
+  <SimuEnv/>
+  <multiple_views/>
+</ROOT>

@@ -4,4 +4,5 @@ rm *pa0*
 rm *st0*
 rm *ic0*
 rm *~
+rm .nfs*
 rm -rf *cx_simulation*
