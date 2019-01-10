@@ -6,3 +6,4 @@ rm *ic0*
 rm *~
 rm .nfs*
 rm -rf *cx_simulation*
+rm *.rc
