@@ -5,6 +5,7 @@ import keras
 import matplotlib.pyplot as plt
 import argparse
 from Synapses import Synapses
+from collections import deque
 np.set_printoptions(threshold=np.nan)
 
 #######################################
@@ -72,7 +73,7 @@ Ts = np.linspace(0., T, steps)
 
 #######################################
 
-accs = []
+count = deque(maxlen=100)
 
 for epoch in range(args.epochs):
     print ("epoch: " + str(epoch + 1) + "/" + str(args.epochs))
@@ -83,7 +84,7 @@ for epoch in range(args.epochs):
     for ex in range(TRAIN_EXAMPLES):
         ##############################
         pre = weights.R
-        # print (ex)
+        print (ex)
         # print (np.std(pre), np.average(pre))
         ##############################
     
@@ -104,6 +105,9 @@ for epoch in range(args.epochs):
         ##############################
         if (np.argmax(A2) == np.argmax(y_train[ex])):
             correct += 1
+            count.append(1)
+        else:
+            count.append(0)
         
         ANS = y_train[ex]
         E = A2 - ANS
@@ -114,16 +118,19 @@ for epoch in range(args.epochs):
         
         ##############################
         Vd = np.zeros(shape=(LAYER1))
+        
         Vg = np.absolute( DW )
         scale = 0.7 / np.max(Vg)
         Vg = scale * Vg + (Vg > 0) * 0.3
         
-        # this model cannot do negative voltages.
         Vc = 1.0 * (E > 0.) + -1.0 * (E < 0.)
-        # Vc = 0.5 * (E > 0.)
         
-        # will 1e-3 work as a learning rate ? 
-        I, dwdt = weights.step(Vd, Vg, Vc, 1e-3)
+        ##############################
+        
+        for step in range(10):
+            # print (step)
+            I, dwdt = weights.step(Vd, Vg, Vc, 1e-7)
+        
         DO = np.sum(I, axis=0)
         # print (I)
         # print (Vc)
@@ -146,27 +153,35 @@ for epoch in range(args.epochs):
         idx = np.where(np.absolute(DW) > 0)
         num = np.sum(np.absolute(DW) > 0)
         
-        print (np.sum(dwdt[idx] > 0), np.sum(dwdt[idx] < 0))
-        print (np.sum(DR[idx] > 0), np.sum(DR[idx] < 0))
-        print (np.sum(DW[idx] > 0), np.sum(DW[idx] < 0))
+        # print (np.sum(dwdt[idx] > 0), np.sum(dwdt[idx] < 0))
+        # print (np.sum(DR[idx] > 0), np.sum(DR[idx] < 0))
+        # print (np.sum(DW[idx] > 0), np.sum(DW[idx] < 0))
         
         sign_dwdt = np.sign(-dwdt)
         sign_DR = np.sign(-DR)
         sign_DW = np.sign(DW)
         
-        print (np.sum(sign_dwdt == sign_DW) / num)
-        print (np.sum(sign_DR == sign_DW) / num)
+        # print (np.sum(sign_dwdt == sign_DW) / num)
+        # print (np.sum(sign_DR == sign_DW) / num)
         
-        print (E)
-        print (DO)
+        # print (E)
+        # print (DO)
         # print (sign_dwdt)
-        print (sign_DR)
+        # print (sign_DR)
         ##############################
-     
+        
+        ##############################
+        # print (np.sum(np.absolute(1. / DR)), np.sum(np.absolute(1. / post)))
+        # print ( np.sum(np.absolute(DR)), np.sum(np.absolute(post)), np.sum(np.absolute(DR)) / np.sum(np.absolute(post)) )
+        print (np.min(post / 1e6), np.max(post / 1e6), np.average(post / 1e6), np.std(post / 1e6))
+        print (np.min(post), np.max(post), np.average(post), np.std(post))
+        print (np.min(1. / post), np.max(1. / post), np.average(1. / post), np.std(1. / post))
+        ##############################
+        
         ##############################
         acc = 1.0 * correct / (ex + 1)
-        accs.append(acc)
-        print ("accuracy: " + str(acc))
+        print ("accuracy: %f last 100: %f" % (acc, np.average(count)))
+        # print (y_train[ex])
         ##############################
 
 

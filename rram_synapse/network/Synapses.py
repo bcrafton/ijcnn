@@ -24,8 +24,15 @@ class Synapses:
         self.ROFF = 100e6
         self.P = 5            
 
-        self.W = np.ones(shape=self.shape) * self.W0
+        # self.W = np.ones(shape=self.shape) * self.W0
         # self.W = np.random.uniform(low=1e-9, high=9e-9, size=shape)
+        
+        # best init weight was 'high / 2'
+        # so like 2e6 or 1/1e6/2
+        
+        self.W0 = 9.9e-9
+        self.W = np.ones(shape=self.shape) * self.W0
+        
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         
     def step(self, Vd, Vg, Vc, dt):
@@ -65,7 +72,8 @@ class Synapses:
 
         F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
         dwdt = ((self.U * self.RON * I) / self.D) * F
-        self.W = np.clip(self.W + dwdt * dt, 1e-9, 9e-9)
+        # self.W = np.clip(self.W + dwdt * dt, 1e-9, 9e-9)
+        self.W = np.clip(self.W + dwdt * dt, 0., 10e-9)
         
         # problem was we were not recomputing R!!!
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))

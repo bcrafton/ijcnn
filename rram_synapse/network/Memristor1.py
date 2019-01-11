@@ -29,7 +29,6 @@ class Memristor:
 
         F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
         dwdt = ((self.U * self.RON * I) / self.D) * F
-        # self.W = np.clip(self.W + dwdt * dt, 1e-9, 9e-9)
         self.W = np.clip(self.W + dwdt * dt, 0., 10e-9)
 
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
@@ -37,8 +36,8 @@ class Memristor:
 
         return I
 
-T = 1e-2
-dt = 1e-6
+T = 1.
+dt = 1e-3
 steps = int(T / dt) + 1
 Ts = np.linspace(0., T, steps)
 
