@@ -50,6 +50,9 @@ x_test = scale * x_test + (x_test > 0) * 0.3
 #######################################
 
 def softmax(x):
+    # may need scale smaller than this.
+    # although this is exactly what we used in the other one.
+    x = x * (1. / 1e-6)
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum()
 
