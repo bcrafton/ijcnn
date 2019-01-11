@@ -1,0 +1,284 @@
+
+*****************************
+* name drain gate source body class
+mnmos vd vg vs gnd nmos w=90n l=50n
+
+* name plus minus class
+Rmem vs vc R='r'
+* Rmem vs vc 1meg
+
+Evd     vd     gnd vol='d'
+Evg     vg     gnd vol='g'
+Evc     vc     gnd vol='c'
+
+****************************
+
+* sources
+* vsvd vd     gnd SIN(0.0, 1.0, 1,    0, 0, 0)
+* vsvg vg     gnd SIN(0.0, 1.0, 10,   0, 0, 0)
+* vsvs vscale gnd SIN(0.0, 1.0, 100,  0, 0, 0)
+* vsvc vc     gnd SIN(0.0, 1.0, 1000, 0, 0, 0)
+
+* vsvd vd     gnd pwl( 0 0 100m 0 100.1m 1 )
+* vsvg vg     gnd pwl( 0 0 100m 0 100.1m 1 )
+* vsvs vscale gnd pwl( 0 0 100m 0 100.1m 1 )
+* vsvc vc     gnd pwl( 0 0 100m 0 100.1m 1 )
+
+* vsvc vc     gnd pwl( 0 0 )
+
+*****************************
+
+.dc data=data1
+.option post=1 POST_VERSION=9601 method=BDF
+.probe i(Rmem) i(mnmos) r(Rmem)
+
+* .print v(vd)
+
+*****************************
+
+.data data1
++ d g c r
++ 1.00 0.00 0.00 1000000
++ 1.00 0.01 0.00 1000000
++ 1.00 0.02 0.00 1000000
++ 1.00 0.03 0.00 1000000
++ 1.00 0.04 0.00 1000000
++ 1.00 0.05 0.00 1000000
++ 1.00 0.06 0.00 1000000
++ 1.00 0.07 0.00 1000000
++ 1.00 0.08 0.00 1000000
++ 1.00 0.09 0.00 1000000
++ 1.00 0.10 0.00 1000000
++ 1.00 0.11 0.00 1000000
++ 1.00 0.12 0.00 1000000
++ 1.00 0.13 0.00 1000000
++ 1.00 0.14 0.00 1000000
++ 1.00 0.15 0.00 1000000
++ 1.00 0.16 0.00 1000000
++ 1.00 0.17 0.00 1000000
++ 1.00 0.18 0.00 1000000
++ 1.00 0.19 0.00 1000000
++ 1.00 0.20 0.00 1000000
++ 1.00 0.21 0.00 1000000
++ 1.00 0.22 0.00 1000000
++ 1.00 0.23 0.00 1000000
++ 1.00 0.24 0.00 1000000
++ 1.00 0.25 0.00 1000000
++ 1.00 0.26 0.00 1000000
++ 1.00 0.27 0.00 1000000
++ 1.00 0.28 0.00 1000000
++ 1.00 0.29 0.00 1000000
++ 1.00 0.30 0.00 1000000
++ 1.00 0.31 0.00 1000000
++ 1.00 0.32 0.00 1000000
++ 1.00 0.33 0.00 1000000
++ 1.00 0.34 0.00 1000000
++ 1.00 0.35 0.00 1000000
++ 1.00 0.36 0.00 1000000
++ 1.00 0.37 0.00 1000000
++ 1.00 0.38 0.00 1000000
++ 1.00 0.39 0.00 1000000
++ 1.00 0.40 0.00 1000000
++ 1.00 0.41 0.00 1000000
++ 1.00 0.42 0.00 1000000
++ 1.00 0.43 0.00 1000000
++ 1.00 0.44 0.00 1000000
++ 1.00 0.45 0.00 1000000
++ 1.00 0.46 0.00 1000000
++ 1.00 0.47 0.00 1000000
++ 1.00 0.48 0.00 1000000
++ 1.00 0.49 0.00 1000000
++ 1.00 0.51 0.00 1000000
++ 1.00 0.52 0.00 1000000
++ 1.00 0.53 0.00 1000000
++ 1.00 0.54 0.00 1000000
++ 1.00 0.55 0.00 1000000
++ 1.00 0.56 0.00 1000000
++ 1.00 0.57 0.00 1000000
++ 1.00 0.58 0.00 1000000
++ 1.00 0.59 0.00 1000000
++ 1.00 0.60 0.00 1000000
++ 1.00 0.61 0.00 1000000
++ 1.00 0.62 0.00 1000000
++ 1.00 0.63 0.00 1000000
++ 1.00 0.64 0.00 1000000
++ 1.00 0.65 0.00 1000000
++ 1.00 0.66 0.00 1000000
++ 1.00 0.67 0.00 1000000
++ 1.00 0.68 0.00 1000000
++ 1.00 0.69 0.00 1000000
++ 1.00 0.70 0.00 1000000
++ 1.00 0.71 0.00 1000000
++ 1.00 0.72 0.00 1000000
++ 1.00 0.73 0.00 1000000
++ 1.00 0.74 0.00 1000000
++ 1.00 0.75 0.00 1000000
++ 1.00 0.76 0.00 1000000
++ 1.00 0.77 0.00 1000000
++ 1.00 0.78 0.00 1000000
++ 1.00 0.79 0.00 1000000
++ 1.00 0.80 0.00 1000000
++ 1.00 0.81 0.00 1000000
++ 1.00 0.82 0.00 1000000
++ 1.00 0.83 0.00 1000000
++ 1.00 0.84 0.00 1000000
++ 1.00 0.85 0.00 1000000
++ 1.00 0.86 0.00 1000000
++ 1.00 0.87 0.00 1000000
++ 1.00 0.88 0.00 1000000
++ 1.00 0.89 0.00 1000000
++ 1.00 0.90 0.00 1000000
++ 1.00 0.91 0.00 1000000
++ 1.00 0.92 0.00 1000000
++ 1.00 0.93 0.00 1000000
++ 1.00 0.94 0.00 1000000
++ 1.00 0.95 0.00 1000000
++ 1.00 0.96 0.00 1000000
++ 1.00 0.97 0.00 1000000
++ 1.00 0.98 0.00 1000000
++ 1.00 0.99 0.00 1000000
++ 1.00 1.00 0.00 1000000
+.enddata
+
+*****************************
+
+* PTM Low Power 45nm Metal Gate / High-K / Strained-Si
+* nominal Vdd = 1.1V
+
+.model  nmos  nmos  level = 54
+
++version = 4.0             binunit = 1               paramchk= 1               mobmod  = 0             
++capmod  = 2               igcmod  = 1               igbmod  = 1               geomod  = 1             
++diomod  = 1               rdsmod  = 0               rbodymod= 1               rgatemod= 1             
++permod  = 1               acnqsmod= 0               trnqsmod= 0             
+
++tnom    = 27              toxe    = 1.8e-009        toxp    = 1.5e-009        toxm    = 1.8e-009      
++dtox    = 3e-010          epsrox  = 3.9             wint    = 5e-009          lint    = 0             
++ll      = 0               wl      = 0               lln     = 1               wln     = 1             
++lw      = 0               ww      = 0               lwn     = 1               wwn     = 1             
++lwl     = 0               wwl     = 0               xpart   = 0               toxref  = 1.8e-009      
+
++vth0    = 0.62261         k1      = 0.4             k2      = 0               k3      = 0             
++k3b     = 0               w0      = 2.5e-006        dvt0    = 1               dvt1    = 2             
++dvt2    = 0               dvt0w   = 0               dvt1w   = 0               dvt2w   = 0             
++dsub    = 0.1             minv    = 0.05            voffl   = 0               dvtp0   = 1e-010        
++dvtp1   = 0.1             lpe0    = 0               lpeb    = 0               xj      = 1.4e-008      
++ngate   = 1e+023          ndep    = 3.24e+018       nsd     = 2e+020          phin    = 0             
++cdsc    = 0               cdscb   = 0               cdscd   = 0               cit     = 0             
++voff    = -0.13           nfactor = 1.6             eta0    = 0.0125          etab    = 0             
++vfb     = -0.55           u0      = 0.049           ua      = 6e-010          ub      = 1.2e-018      
++uc      = 0               vsat    = 130000          a0      = 1               ags     = 0             
++a1      = 0               a2      = 1               b0      = 0               b1      = 0             
++keta    = 0.04            dwg     = 0               dwb     = 0               pclm    = 0.02          
++pdiblc1 = 0.001           pdiblc2 = 0.001           pdiblcb = -0.005          drout   = 0.5           
++pvag    = 1e-020          delta   = 0.01            pscbe1  = 8.14e+008       pscbe2  = 1e-007        
++fprout  = 0.2             pdits   = 0.08            pditsd  = 0.23            pditsl  = 2300000       
++rsh     = 5               rdsw    = 210             rsw     = 80              rdw     = 80            
++rdswmin = 0               rdwmin  = 0               rswmin  = 0               prwg    = 0             
++prwb    = 0               wr      = 1               alpha0  = 0.074           alpha1  = 0.005         
++beta0   = 30              agidl   = 0.0002          bgidl   = 2.1e+009        cgidl   = 0.0002        
++egidl   = 0.8             aigbacc = 0.012           bigbacc = 0.0028          cigbacc = 0.002         
++nigbacc = 1               aigbinv = 0.014           bigbinv = 0.004           cigbinv = 0.004         
++eigbinv = 1.1             nigbinv = 3               aigc    = 0.015211        bigc    = 0.0027432     
++cigc    = 0.002           aigsd   = 0.015211        bigsd   = 0.0027432       cigsd   = 0.002         
++nigc    = 1               poxedge = 1               pigcd   = 1               ntox    = 1             
++xrcrg1  = 12              xrcrg2  = 5             
+
++cgso    = 1.1e-010        cgdo    = 1.1e-010        cgbo    = 2.56e-011       cgdl    = 2.653e-010    
++cgsl    = 2.653e-010      ckappas = 0.03            ckappad = 0.03            acde    = 1             
++moin    = 15              noff    = 0.9             voffcv  = 0.02          
+
++kt1     = -0.11           kt1l    = 0               kt2     = 0.022           ute     = -1.5          
++ua1     = 4.31e-009       ub1     = 7.61e-018       uc1     = -5.6e-011       prt     = 0             
++at      = 33000         
+
++fnoimod = 1               tnoimod = 0             
+
++jss     = 0.0001          jsws    = 1e-011          jswgs   = 1e-010          njs     = 1             
++ijthsfwd= 0.01            ijthsrev= 0.001           bvs     = 10              xjbvs   = 1             
++jsd     = 0.0001          jswd    = 1e-011          jswgd   = 1e-010          njd     = 1             
++ijthdfwd= 0.01            ijthdrev= 0.001           bvd     = 10              xjbvd   = 1             
++pbs     = 1               cjs     = 0.0005          mjs     = 0.5             pbsws   = 1             
++cjsws   = 5e-010          mjsws   = 0.33            pbswgs  = 1               cjswgs  = 3e-010        
++mjswgs  = 0.33            pbd     = 1               cjd     = 0.0005          mjd     = 0.5           
++pbswd   = 1               cjswd   = 5e-010          mjswd   = 0.33            pbswgd  = 1             
++cjswgd  = 5e-010          mjswgd  = 0.33            tpb     = 0.005           tcj     = 0.001         
++tpbsw   = 0.005           tcjsw   = 0.001           tpbswg  = 0.005           tcjswg  = 0.001         
++xtis    = 3               xtid    = 3             
+
++dmcg    = 0               dmci    = 0               dmdg    = 0               dmcgt   = 0             
++dwj     = 0               xgw     = 0               xgl     = 0             
+
++rshg    = 0.4             gbmin   = 1e-010          rbpb    = 5               rbpd    = 15            
++rbps    = 15              rbdb    = 15              rbsb    = 15              ngcon   = 1             
+
+
+.model  pmos  pmos  level = 54
+
+
++version = 4.0             binunit = 1               paramchk= 1               mobmod  = 0             
++capmod  = 2               igcmod  = 1               igbmod  = 1               geomod  = 1             
++diomod  = 1               rdsmod  = 0               rbodymod= 1               rgatemod= 1             
++permod  = 1               acnqsmod= 0               trnqsmod= 0             
+
++tnom    = 27              toxe    = 1.82e-009       toxp    = 1.5e-009        toxm    = 1.82e-009     
++dtox    = 3.2e-010        epsrox  = 3.9             wint    = 5e-009          lint    = 0             
++ll      = 0               wl      = 0               lln     = 1               wln     = 1             
++lw      = 0               ww      = 0               lwn     = 1               wwn     = 1             
++lwl     = 0               wwl     = 0               xpart   = 0               toxref  = 1.82e-009     
+
++vth0    = -0.587          k1      = 0.4             k2      = -0.01           k3      = 0             
++k3b     = 0               w0      = 2.5e-006        dvt0    = 1               dvt1    = 2             
++dvt2    = -0.032          dvt0w   = 0               dvt1w   = 0               dvt2w   = 0             
++dsub    = 0.1             minv    = 0.05            voffl   = 0               dvtp0   = 1e-011        
++dvtp1   = 0.05            lpe0    = 0               lpeb    = 0               xj      = 1.4e-008      
++ngate   = 1e+023          ndep    = 2.44e+018       nsd     = 2e+020          phin    = 0             
++cdsc    = 0               cdscb   = 0               cdscd   = 0               cit     = 0             
++voff    = -0.126          nfactor = 1.8             eta0    = 0.0125          etab    = 0             
++vfb     = 0.55            u0      = 0.021           ua      = 2e-009          ub      = 5e-019        
++uc      = 0               vsat    = 90000           a0      = 1               ags     = 1e-020        
++a1      = 0               a2      = 1               b0      = 0               b1      = 0             
++keta    = -0.047          dwg     = 0               dwb     = 0               pclm    = 0.12          
++pdiblc1 = 0.001           pdiblc2 = 0.001           pdiblcb = 3.4e-008        drout   = 0.56          
++pvag    = 1e-020          delta   = 0.01            pscbe1  = 8.14e+008       pscbe2  = 9.58e-007     
++fprout  = 0.2             pdits   = 0.08            pditsd  = 0.23            pditsl  = 2300000       
++rsh     = 5               rdsw    = 250             rsw     = 75              rdw     = 75            
++rdswmin = 0               rdwmin  = 0               rswmin  = 0               prwg    = 0             
++prwb    = 0               wr      = 1               alpha0  = 0.074           alpha1  = 0.005         
++beta0   = 30              agidl   = 0.0002          bgidl   = 2.1e+009        cgidl   = 0.0002        
++egidl   = 0.8             aigbacc = 0.012           bigbacc = 0.0028          cigbacc = 0.002         
++nigbacc = 1               aigbinv = 0.014           bigbinv = 0.004           cigbinv = 0.004         
++eigbinv = 1.1             nigbinv = 3               aigc    = 0.0097          bigc    = 0.00125       
++cigc    = 0.0008          aigsd   = 0.0097          bigsd   = 0.00125         cigsd   = 0.0008        
++nigc    = 1               poxedge = 1               pigcd   = 1               ntox    = 1             
++xrcrg1  = 12              xrcrg2  = 5             
+
++cgso    = 1.1e-010        cgdo    = 1.1e-010        cgbo    = 2.56e-011       cgdl    = 2.653e-010    
++cgsl    = 2.653e-010      ckappas = 0.03            ckappad = 0.03            acde    = 1             
++moin    = 15              noff    = 0.9             voffcv  = 0.02          
+
++kt1     = -0.11           kt1l    = 0               kt2     = 0.022           ute     = -1.5          
++ua1     = 4.31e-009       ub1     = 7.61e-018       uc1     = -5.6e-011       prt     = 0             
++at      = 33000         
+
++fnoimod = 1               tnoimod = 0             
+
++jss     = 0.0001          jsws    = 1e-011          jswgs   = 1e-010          njs     = 1             
++ijthsfwd= 0.01            ijthsrev= 0.001           bvs     = 10              xjbvs   = 1             
++jsd     = 0.0001          jswd    = 1e-011          jswgd   = 1e-010          njd     = 1             
++ijthdfwd= 0.01            ijthdrev= 0.001           bvd     = 10              xjbvd   = 1             
++pbs     = 1               cjs     = 0.0005          mjs     = 0.5             pbsws   = 1             
++cjsws   = 5e-010          mjsws   = 0.33            pbswgs  = 1               cjswgs  = 3e-010        
++mjswgs  = 0.33            pbd     = 1               cjd     = 0.0005          mjd     = 0.5           
++pbswd   = 1               cjswd   = 5e-010          mjswd   = 0.33            pbswgd  = 1             
++cjswgd  = 5e-010          mjswgd  = 0.33            tpb     = 0.005           tcj     = 0.001         
++tpbsw   = 0.005           tcjsw   = 0.001           tpbswg  = 0.005           tcjswg  = 0.001         
++xtis    = 3               xtid    = 3             
+
++dmcg    = 0               dmci    = 0               dmdg    = 0               dmcgt   = 0             
++dwj     = 0               xgw     = 0               xgl     = 0             
+
++rshg    = 0.4             gbmin   = 1e-010          rbpb    = 5               rbpd    = 15            
++rbps    = 15              rbdb    = 15              rbsb    = 15              ngcon   = 1             
+
+.end
