@@ -6,15 +6,19 @@ vals = '+ d g c r\n'
 data = ''
 foot = '.enddata\n'
 
-d_sweep = np.linspace(0.0, 1.0, 15)
-g_sweep = np.linspace(0.0, 1.0, 15)
-c_sweep = np.linspace(-1.0, 1.0, 25)
-r_sweep = np.linspace(1e6, 100e6, 15)
+# say that v = (vd - vc)
+# say that i = g * v / r
 
-for d in d_sweep:
-    for g in g_sweep:
-        for c in c_sweep:
-            for r in r_sweep:
+d_sweep = np.linspace(-1.0, 1.0, 20)
+g_sweep = np.linspace( 0.0, 1.0, 10)
+c_sweep = np.linspace( 0.0, 0.0, 1 )
+r_sweep = np.linspace( 6,   8,   10)
+r_sweep = np.power(10, r_sweep)
+
+for r in r_sweep:
+    for d in d_sweep:
+        for g in g_sweep:
+            for c in c_sweep:
                 point = '+ %0.2f %0.2f %0.2f %0.0f\n' % (d, g, c, r)
                 data = data + point
 

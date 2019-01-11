@@ -13,17 +13,20 @@ except ImportError:
 
 print ("loading data")
 
-vd = np.genfromtxt('vd.csv', delimiter=',')
-vg = np.genfromtxt('vg.csv', delimiter=',')
-vc = np.genfromtxt('vc.csv', delimiter=',')
-r  = np.genfromtxt('r.csv',  delimiter=',')
-i  = np.genfromtxt('i.csv',  delimiter=',')
+vd = np.genfromtxt('vd.csv', delimiter=',').reshape(-1, 1)
+vg = np.genfromtxt('vg.csv', delimiter=',').reshape(-1, 1)
+vc = np.genfromtxt('vc.csv', delimiter=',').reshape(-1, 1)
+r  = np.genfromtxt('r.csv',  delimiter=',').reshape(-1, 1)
+i  = np.genfromtxt('i.csv',  delimiter=',').reshape(-1, 1)
 
 print ("building interpolator")
 
-x = np.transpose([vd, vg, vc, r])
+points = np.concatenate((vd, vg, vc, r), axis=1)
+x = points
 y = i
-fit = interpolate.LinearNDInterpolator(x, y, fill_value=0.0)
+
+fit = interpolate.LinearNDInterpolator(x, y, fill_value=0.0, rescale=True)
+# fit = interpolate.NearestNDInterpolator(x, y)
 
 with open('fit.pkl', 'wb') as f:
     pickle.dump(fit, f)
