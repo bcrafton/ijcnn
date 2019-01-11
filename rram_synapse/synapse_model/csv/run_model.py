@@ -24,6 +24,13 @@ vd = np.genfromtxt('vd.csv', delimiter=',').reshape(-1, 1)
 vg = np.genfromtxt('vg.csv', delimiter=',').reshape(-1, 1)
 vc = np.genfromtxt('vc.csv', delimiter=',').reshape(-1, 1)
 r  = np.genfromtxt('r.csv',  delimiter=',').reshape(-1, 1)
+i  = np.genfromtxt('r.csv',  delimiter=',').reshape(-1, 1)
+
+print (np.shape(vd))
+print (np.shape(vg))
+print (np.shape(vc))
+print (np.shape(r))
+print (np.shape(i))
 
 points = np.concatenate((vd, vg, vc, r), axis=1)
 

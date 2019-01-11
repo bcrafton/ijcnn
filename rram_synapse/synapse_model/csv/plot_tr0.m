@@ -3,7 +3,7 @@
 addpath('../HspiceToolbox/');
 colordef none;
 
-sig = loadsig('synapse_sweep4.sw0');
+sig = loadsig('synapse_sweep6.sw0');
 lssig(sig);
 
 vd     = evalsig(sig, 'v_vd');
@@ -12,7 +12,7 @@ vc     = evalsig(sig, 'v_vc');
 r      = evalsig(sig, 'r_rmem');
 i      = evalsig(sig, 'i_rmem');
 
-l = length(vd);
+l = length(vd)
 t = linspace(0, 1, l);
 
 subplot(5,1,1)
