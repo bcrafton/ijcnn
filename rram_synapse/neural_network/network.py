@@ -71,6 +71,7 @@ def dsigmoid(x):
     return x * (1. - x)
 
 def relu(x):
+    x = x * (1. / 1e-6)
     return x * (x > 0)
   
 def drelu(x):
@@ -118,9 +119,9 @@ for epoch in range(args.epochs):
         
         I = weights1.step(Vd, Vg, Vc, 1e-12, fit=1) # * sign1
         Z2 = np.sum(I, axis=0)
-        # probably pushing out all 0.5
-        # definitely needs to be a relu cant have negative currents.
-        A2 = sigmoid(Z2) 
+        # this is def way to small.
+        A2 = relu(Z2)
+        # print (A2)
         ##############################
 
         ##############################
@@ -144,7 +145,7 @@ for epoch in range(args.epochs):
         E = A3 - ANS
         
         D3 = E
-        D2 = np.dot(D3, np.transpose(b2)) * dsigmoid(A2)
+        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
         
         DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3)) * weights2.sign # * sign2
         DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2)) * weights1.sign # * sign1
@@ -160,7 +161,7 @@ for epoch in range(args.epochs):
         Vc = 1.0 * (D3 > 0.) + -1.0 * (D3 < 0.)
         
         for step in range(100):
-            I = weights2.step(Vd, Vg, Vc, 1e-9, fit=2)
+            I = weights2.step(Vd, Vg, Vc, 1e-8, fit=2)
         
         # DO = np.sum(I, axis=0)
         # print (DO)
@@ -176,7 +177,7 @@ for epoch in range(args.epochs):
         Vc = 1.0 * (D2 > 0.) + -1.0 * (D2 < 0.)
         
         for step in range(100):
-            I = weights1.step(Vd, Vg, Vc, 1e-9, fit=2)
+            I = weights1.step(Vd, Vg, Vc, 1e-8, fit=2)
         
         # DO = np.sum(I, axis=0)
         # print (DO)
@@ -191,7 +192,7 @@ for epoch in range(args.epochs):
         sign_DW2 = np.sign(DW2)
         num2 = np.sum(np.absolute(DW2) > 0)
         ratio2 = np.sum(sign_DR2 == sign_DW2) / num2
-        print (ratio2)
+        # print (ratio2)
         assert(ratio2 == 1.)
 
         DR1 = pre1 - post1
@@ -199,7 +200,7 @@ for epoch in range(args.epochs):
         sign_DW1 = np.sign(DW1)
         num1 = np.sum(np.absolute(DW1) > 0)
         ratio1 = np.sum(sign_DR1 == sign_DW1) / num1
-        print (ratio1)
+        # print (ratio1)
         assert(ratio1 == 1.)
 
         ##############################
@@ -208,7 +209,8 @@ for epoch in range(args.epochs):
         acc = 1.0 * correct / (ex + 1)
         print ("%d: accuracy: %f last 100: %f" % (ex, acc, np.average(count)))
         
-        # print (np.min(post / 1e6), np.max(post / 1e6), np.average(post / 1e6), np.std(post / 1e6))
+        print (np.min(post2 / 1e6), np.max(post2 / 1e6), np.average(post2 / 1e6), np.std(post2 / 1e6))
+        print (np.min(post1 / 1e6), np.max(post1 / 1e6), np.average(post1 / 1e6), np.std(post1 / 1e6))
         ##############################
 
 
