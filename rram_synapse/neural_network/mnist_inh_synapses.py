@@ -8,10 +8,14 @@ import keras
 parser = argparse.ArgumentParser()
 parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--lr', type=float, default=1e-2)
+parser.add_argument('--batch_size', type=int, default=50)
+parser.add_argument('--examples', type=int, default=60000)
+parser.add_argument('--scale', type=float, default=100.)
+parser.add_argument('--low', type=float, default=1./100e6)
 args = parser.parse_args()
 
 LAYER1 = 784
-LAYER2 = 400
+LAYER2 = 100
 LAYER3 = 10
 
 TRAIN_EXAMPLES = 60000
@@ -52,23 +56,24 @@ x_test = x_test / np.max(x_test)
 
 #######################################
 
-# high = 1. / np.sqrt((LAYER1 + LAYER2) / 2.)
-high = 1. / np.sqrt(LAYER1)
-weights1 = np.random.uniform(low=-high, high=high, size=(LAYER1, LAYER2))
+low = args.low
+high = args.low * args.scale
+
+#######################################
+
+weights1 = np.ones(shape=(LAYER1, LAYER2)) * (low / 2.)
 bias1 = np.zeros(shape=LAYER2)
 rate1 = 0.75
 sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
-# high = 1. / np.sqrt(LAYER2)
-high = 1. / np.sqrt(LAYER2)
-weights2 = np.random.uniform(low=-high, high=high, size=(LAYER2, LAYER3))
+weights2 = np.ones(shape=(LAYER2, LAYER3)) * (low / 2.)
 bias2 = np.zeros(shape=LAYER3)
 rate2 = 0.75
 sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
 
-# high = 1. / np.sqrt(LAYER3)
-high = 1. / np.sqrt(LAYER2)
-b2 = np.random.uniform(low=-high, high=high, size=(LAYER3, LAYER2))
+hi = 1. / np.sqrt(LAYER2)
+lo = -hi
+b2 = np.random.uniform(low=lo, high=hi, size=(LAYER2, LAYER3))
 
 #######################################
 
@@ -76,14 +81,14 @@ for epoch in range(args.epochs):
     print ("epoch: %d/%d" % (epoch, args.epochs))
     
     correct = 0
-    for ex in range(0, TRAIN_EXAMPLES, 50):
+    for ex in range(0, args.examples, args.batch_size):
         start = ex 
-        stop = ex + 50
+        stop = ex + args.batch_size
     
         A1 = x_train[start:stop]
-        Z2 = np.dot(A1, weights1 * sign1) + bias1
+        Z2 = np.dot(A1, weights1 * sign1) # + bias1
         A2 = relu(Z2)
-        Z3 = np.dot(A2, weights2 * sign2) + bias2
+        Z3 = np.dot(A2, weights2 * sign2) # + bias2
         A3 = softmax(Z3)
         
         labels = y_train[start:stop]
@@ -93,7 +98,7 @@ for epoch in range(args.epochs):
         # think we need to use sigmoid bc we not dividing batch size.
         # in mnist_fc we use tanh not relu.
         D3 = A3 - labels
-        D2 = np.dot(D3, np.transpose(weights2 * sign2)) * drelu(A2)
+        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
         
         DW2 = np.dot(np.transpose(A2), D3) * sign2 # is this correct ? 
         DB2 = np.sum(D3, axis=0) 
@@ -101,23 +106,23 @@ for epoch in range(args.epochs):
         DW1 = np.dot(np.transpose(A1), D2) * sign1 # is this correct ? 
         DB1 = np.sum(D2, axis=0)
         
-        weights2 = np.clip(weights2 - args.lr * DW2, 1e-6, 1e6)
-        weights1 = np.clip(weights1 - args.lr * DW1, 1e-6, 1e6)
+        weights2 = np.clip(weights2 - args.lr * DW2, low, high)
+        weights1 = np.clip(weights1 - args.lr * DW1, low, high)
         
         bias2 = bias2 - args.lr * DB2
         bias1 = bias1 - args.lr * DB1
         
-    train_acc = 1. * correct / TRAIN_EXAMPLES
+    train_acc = 1. * correct / ex
         
     correct = 0
-    for ex in range(0, TEST_EXAMPLES, 50):
+    for ex in range(0, TEST_EXAMPLES, args.batch_size):
         start = ex 
-        stop = ex + 50
+        stop = ex + args.batch_size
     
         A1 = x_test[start:stop]
-        Z2 = np.dot(A1, weights1 * sign1) + bias1
+        Z2 = np.dot(A1, weights1 * sign1) # + bias1
         A2 = relu(Z2)
-        Z3 = np.dot(A2, weights2 * sign2) + bias2
+        Z3 = np.dot(A2, weights2 * sign2) # + bias2
         A3 = softmax(Z3)
         
         labels = y_test[start:stop]
