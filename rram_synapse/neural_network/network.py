@@ -80,14 +80,18 @@ def drelu(x):
 #######################################
 
 LAYER1 = 784
-LAYER2 = 400
+LAYER2 = 100
 LAYER3 = 10
 
-weights1 = Synapses(shape=(LAYER1, LAYER2))
+weights1 = Synapses(shape=(LAYER1, LAYER2), rate=0.75)
 bias1 = np.zeros(shape=(LAYER2))
+# rate1 = 0.75
+# sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
-weights2 = Synapses(shape=(LAYER2, LAYER3))
+weights2 = Synapses(shape=(LAYER2, LAYER3), rate=0.75)
 bias2 = np.zeros(shape=(LAYER3))
+# rate2 = 0.75
+# sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
 
 high = 1. / np.sqrt(LAYER2)
 b2 = np.random.uniform(low=-high, high=high, size=(LAYER2, LAYER3))
@@ -112,9 +116,11 @@ for epoch in range(args.epochs):
         Vg = np.ones(shape=(LAYER1, LAYER2))
         Vc = np.zeros(shape=(LAYER2))
         
-        I = weights1.step(Vd, Vg, Vc, 1e-12, fit=1) 
+        I = weights1.step(Vd, Vg, Vc, 1e-12, fit=1) # * sign1
         Z2 = np.sum(I, axis=0)
-        A2 = sigmoid(Z2) # probably pushing out all 0.5
+        # probably pushing out all 0.5
+        # definitely needs to be a relu cant have negative currents.
+        A2 = sigmoid(Z2) 
         ##############################
 
         ##############################
@@ -122,7 +128,7 @@ for epoch in range(args.epochs):
         Vg = np.ones(shape=(LAYER2, LAYER3))
         Vc = np.zeros(shape=(LAYER3))
         
-        I = weights2.step(Vd, Vg, Vc, 1e-12, fit=1) 
+        I = weights2.step(Vd, Vg, Vc, 1e-12, fit=1) # * sign2
         Z3 = np.sum(I, axis=0)
         A3 = softmax(Z3)
         ##############################
@@ -140,8 +146,8 @@ for epoch in range(args.epochs):
         D3 = E
         D2 = np.dot(D3, np.transpose(b2)) * dsigmoid(A2)
         
-        DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3))
-        DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2))
+        DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3)) * weights2.sign # * sign2
+        DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2)) * weights1.sign # * sign1
         ##############################
         
         ##############################
@@ -151,7 +157,7 @@ for epoch in range(args.epochs):
         scale = vscale_x / np.max(Vg)
         Vg = scale * Vg + (Vg > 0) * vscale_y
         
-        Vc = 1.0 * (E > 0.) + -1.0 * (E < 0.)
+        Vc = 1.0 * (D3 > 0.) + -1.0 * (D3 < 0.)
         
         for step in range(100):
             I = weights2.step(Vd, Vg, Vc, 1e-9, fit=2)
@@ -179,14 +185,23 @@ for epoch in range(args.epochs):
         ##############################
         post1 = weights1.R
         post2 = weights2.R
-        '''
-        DR = pre - post
-        sign_DR = np.sign(-DR)
-        sign_DW = np.sign(DW)
-        num = np.sum(np.absolute(DW) > 0)
-        ratio = np.sum(sign_DR == sign_DW) / num
-        assert(ratio == 1.)
-        '''
+
+        DR2 = pre2 - post2
+        sign_DR2 = np.sign(-DR2)
+        sign_DW2 = np.sign(DW2)
+        num2 = np.sum(np.absolute(DW2) > 0)
+        ratio2 = np.sum(sign_DR2 == sign_DW2) / num2
+        print (ratio2)
+        assert(ratio2 == 1.)
+
+        DR1 = pre1 - post1
+        sign_DR1 = np.sign(-DR1)
+        sign_DW1 = np.sign(DW1)
+        num1 = np.sum(np.absolute(DW1) > 0)
+        ratio1 = np.sum(sign_DR1 == sign_DW1) / num1
+        print (ratio1)
+        assert(ratio1 == 1.)
+
         ##############################
         
         ##############################

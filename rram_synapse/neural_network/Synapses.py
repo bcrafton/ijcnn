@@ -10,7 +10,7 @@ except ImportError:
 
 class Synapses:
     
-    def __init__(self, shape):
+    def __init__(self, shape, rate):
         with open('fit1.pkl', 'rb') as f:
             self.fit1 = pickle.load(f)
         with open('fit2.pkl', 'rb') as f:
@@ -28,6 +28,11 @@ class Synapses:
         self.W = np.ones(shape=self.shape) * self.W0
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         
+        # so the idea with sign is that we flip the memristor terminals so that is gets the correct gradient
+        # and we just return the 'negative current' because we are sending it to inh terminal of neuron
+        self.rate = rate
+        self.sign = np.random.choice([-1., 1.], size=(self.shape), replace=True, p=[1.-self.rate, self.rate])
+
     def step(self, Vd, Vg, Vc, dt, fit=1):
     
         assert(np.shape(Vd) == (self.input_size,))
@@ -52,13 +57,14 @@ class Synapses:
             points = np.concatenate((Vd, Vg), axis=1)
             I = self.fit1(points) / r * 1e6
         else:
+            # fit2 is fucked up for Vc, so we just make it positive and flip the sign afterwards.
             sign = np.sign(Vc)
             Vc = np.absolute(Vc)
             points = np.concatenate((Vc, Vg), axis=1)
             I = self.fit2(points) / r * 1e6
             I = I * sign
             
-        I = np.reshape(I, self.shape)
+        I = np.reshape(I, self.shape) * self.sign
 
         F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
         dwdt = ((self.U * self.RON * I) / self.D) * F
