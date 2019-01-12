@@ -120,7 +120,7 @@ for epoch in range(args.epochs):
         I = weights1.step(Vd, Vg, Vc, 1e-12, fit=1) # * sign1
         Z2 = np.sum(I, axis=0)
         # this is def way to small.
-        A2 = relu(Z2)
+        A2 = relu(Z2 * 1e6)
         # print (A2)
         ##############################
 
@@ -131,7 +131,7 @@ for epoch in range(args.epochs):
         
         I = weights2.step(Vd, Vg, Vc, 1e-12, fit=1) # * sign2
         Z3 = np.sum(I, axis=0)
-        A3 = softmax(Z3)
+        A3 = softmax(Z3 * 1e6)
         ##############################
 
         ##############################
@@ -147,8 +147,9 @@ for epoch in range(args.epochs):
         D3 = E
         D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
         
-        DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3)) * weights2.sign # * sign2
-        DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2)) * weights1.sign # * sign1
+        # this wont do anything because we scale it to be [0.45, 1] anyways.
+        DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3)) * weights2.sign / 1e6
+        DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2)) * weights1.sign 
         ##############################
         
         ##############################
@@ -160,8 +161,8 @@ for epoch in range(args.epochs):
         
         Vc = 1.0 * (D3 > 0.) + -1.0 * (D3 < 0.)
         
-        for step in range(100):
-            I = weights2.step(Vd, Vg, Vc, 1e-8, fit=2)
+        for step in range(10):
+            I = weights2.step(Vd, Vg, Vc, 1e-6, fit=2)
         
         # DO = np.sum(I, axis=0)
         # print (DO)
@@ -176,8 +177,8 @@ for epoch in range(args.epochs):
         
         Vc = 1.0 * (D2 > 0.) + -1.0 * (D2 < 0.)
         
-        for step in range(100):
-            I = weights1.step(Vd, Vg, Vc, 1e-8, fit=2)
+        for step in range(10):
+            I = weights1.step(Vd, Vg, Vc, 1e-6, fit=2)
         
         # DO = np.sum(I, axis=0)
         # print (DO)

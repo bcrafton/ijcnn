@@ -104,21 +104,21 @@ for epoch in range(args.epochs):
         correct += np.sum(np.argmax(A3, axis=1) == np.argmax(labels, axis=1))
         
         D3 = A3 - labels
-        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
+        D2 = np.dot(D3, np.transpose(weights2 * sign2)) * drelu(A2)
         
         DW2 = np.dot(np.transpose(A2), D3) * sign2 * high 
         DB2 = np.sum(D3, axis=0) 
         
         DW1 = np.dot(np.transpose(A1), D2) * sign1  
         DB1 = np.sum(D2, axis=0)
-        '''
+
         print ("Z2  %0.10f %0.10f %0.10f" % (np.std(Z2),  np.min(Z2),  np.max(Z2)))
         print ("A2  %0.10f %0.10f %0.10f" % (np.std(A2),  np.min(A2),  np.max(A2)))
         print ("Z3  %0.10f %0.10f %0.10f" % (np.std(Z3),  np.min(Z3),  np.max(Z3)))
         print ("A3  %0.10f %0.10f %0.10f" % (np.std(A3),  np.min(A3),  np.max(A3)))
         print ("DW1 %0.10f %0.10f %0.10f" % (np.std(DW1), np.min(DW1), np.max(DW1)))
         print ("DW2 %0.10f %0.10f %0.10f" % (np.std(DW2), np.min(DW2), np.max(DW2)))
-        '''
+        
         weights2 = np.clip(weights2 - args.lr * DW2, low, high)
         weights1 = np.clip(weights1 - args.lr * DW1, low, high)
 

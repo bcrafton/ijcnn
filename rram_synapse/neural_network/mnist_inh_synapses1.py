@@ -7,11 +7,11 @@ import keras
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--epochs', type=int, default=100)
-parser.add_argument('--lr', type=float, default=1e-3)
+parser.add_argument('--lr', type=float, default=1e-2)
 parser.add_argument('--batch_size', type=int, default=50)
 parser.add_argument('--examples', type=int, default=60000)
 parser.add_argument('--scale', type=float, default=100.)
-parser.add_argument('--low', type=float, default=1e-8)
+parser.add_argument('--low', type=float, default=1./100e6)
 args = parser.parse_args()
 
 LAYER1 = 784
@@ -92,11 +92,11 @@ for epoch in range(args.epochs):
     
         A1 = x_train[start:stop]
         Z2 = np.dot(A1, weights1 * sign1) # + bias1
-        A2 = relu(Z2 / high) 
+        A2 = relu(Z2)
         # A2 = (1. / np.max(A2)) * A2
         # print (A2)
         Z3 = np.dot(A2, weights2 * sign2) # + bias2
-        A3 = softmax(Z3 / high)
+        A3 = softmax(Z3)
         # print (A3)
         
         labels = y_train[start:stop]
@@ -104,23 +104,19 @@ for epoch in range(args.epochs):
         correct += np.sum(np.argmax(A3, axis=1) == np.argmax(labels, axis=1))
         
         D3 = A3 - labels
-        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
+        D2 = np.dot(D3, np.transpose(weights2 * sign2)) * drelu(A2)
         
-        DW2 = np.dot(np.transpose(A2), D3) * sign2 * high 
+        DW2 = np.dot(np.transpose(A2), D3) * sign2 # is this correct ? 
         DB2 = np.sum(D3, axis=0) 
         
-        DW1 = np.dot(np.transpose(A1), D2) * sign1  
+        DW1 = np.dot(np.transpose(A1), D2) * sign1 # is this correct ? 
         DB1 = np.sum(D2, axis=0)
-        '''
-        print ("Z2  %0.10f %0.10f %0.10f" % (np.std(Z2),  np.min(Z2),  np.max(Z2)))
-        print ("A2  %0.10f %0.10f %0.10f" % (np.std(A2),  np.min(A2),  np.max(A2)))
-        print ("Z3  %0.10f %0.10f %0.10f" % (np.std(Z3),  np.min(Z3),  np.max(Z3)))
-        print ("A3  %0.10f %0.10f %0.10f" % (np.std(A3),  np.min(A3),  np.max(A3)))
-        print ("DW1 %0.10f %0.10f %0.10f" % (np.std(DW1), np.min(DW1), np.max(DW1)))
-        print ("DW2 %0.10f %0.10f %0.10f" % (np.std(DW2), np.min(DW2), np.max(DW2)))
-        '''
-        weights2 = np.clip(weights2 - args.lr * DW2, low, high)
-        weights1 = np.clip(weights1 - args.lr * DW1, low, high)
+        
+        # weights2 = np.clip(weights2 - args.lr * DW2, low, high)
+        # weights1 = np.clip(weights1 - args.lr * DW1, low, high)
+
+        weights2 = np.clip(weights2 - args.lr * DW2, .01, 1.)
+        weights1 = np.clip(weights1 - args.lr * DW1, .01, 1.)
 
         bias2 = bias2 - args.lr * DB2
         bias1 = bias1 - args.lr * DB1
@@ -131,10 +127,10 @@ for epoch in range(args.epochs):
 
     A1 = x_test
     Z2 = np.dot(A1, weights1 * sign1) # + bias1
-    A2 = relu(Z2 / high)
+    A2 = relu(Z2)
     # A2 = (1. / np.max(A2)) * A2
     Z3 = np.dot(A2, weights2 * sign2) # + bias2
-    A3 = softmax(Z3 / high)
+    A3 = softmax(Z3)
     
     labels = y_test
     
