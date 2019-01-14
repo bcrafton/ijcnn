@@ -8,14 +8,18 @@ import keras
 parser = argparse.ArgumentParser()
 parser.add_argument('--epochs', type=int, default=1)
 parser.add_argument('--lr', type=float, default=1e-3)
-parser.add_argument('--batch_size', type=int, default=50)
-parser.add_argument('--examples', type=int, default=5000)
+parser.add_argument('--batch_size', type=int, default=1)
+parser.add_argument('--examples', type=int, default=100)
 parser.add_argument('--scale', type=float, default=100.)
 parser.add_argument('--low', type=float, default=1e-8)
 args = parser.parse_args()
 
+np.random.seed(0)
+
+#######################################
+
 LAYER1 = 784
-LAYER2 = 400
+LAYER2 = 100
 LAYER3 = 10
 
 TRAIN_EXAMPLES = 60000
@@ -61,12 +65,12 @@ high = args.low * args.scale
 
 #######################################
 
-weights1 = np.ones(shape=(LAYER1, LAYER2)) * (low * 2.)
+weights1 = np.ones(shape=(LAYER1, LAYER2)) * (1. / 0.505e8)
 bias1 = np.zeros(shape=LAYER2)
 rate1 = 0.75
 sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
-weights2 = np.ones(shape=(LAYER2, LAYER3)) * (low * 2.)
+weights2 = np.ones(shape=(LAYER2, LAYER3)) * (1. / 0.505e8)
 bias2 = np.zeros(shape=LAYER3)
 rate2 = 0.75
 sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
@@ -77,7 +81,7 @@ sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-r
 
 # thinking b2 should be positive since w2 is positive.
 # problem is we include the sign when we send back with w2.
-b2 = np.random.uniform(low=low, high=high, size=(LAYER2, LAYER3))
+# b2 = np.random.uniform(low=low, high=high, size=(LAYER2, LAYER3))
 
 print (np.min(1. / weights1 / 1e6), np.max(1. / weights1 / 1e6), np.average(1. / weights1 / 1e6), np.std(1./ weights1 / 1e6))
 print (np.min(1. / weights2 / 1e6), np.max(1. / weights2 / 1e6), np.average(1. / weights2 / 1e6), np.std(1./ weights2 / 1e6))
@@ -98,21 +102,18 @@ for epoch in range(args.epochs):
     
         A1 = x_train[start:stop]
         Z2 = np.dot(A1, weights1 * sign1) # + bias1
-        A2 = relu(Z2 / high) 
-        # A2 = (1. / np.max(A2)) * A2
-        # print (A2)
+        A2 = relu(Z2 / np.max(Z2))
         Z3 = np.dot(A2, weights2 * sign2) # + bias2
         A3 = softmax(Z3 / high)
-        # print (A3)
         
         labels = y_train[start:stop]
         
         correct += np.sum(np.argmax(A3, axis=1) == np.argmax(labels, axis=1))
         
         D3 = A3 - labels
-        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
+        D2 = np.dot(D3, np.transpose(weights2 * sign2)) * drelu(A2)
         
-        DW2 = np.dot(np.transpose(A2), D3) * sign2 * high 
+        DW2 = np.dot(np.transpose(A2), D3) * sign2 / 1e6 # / 4. # 20. # * high 
         DB2 = np.sum(D3, axis=0) 
         
         DW1 = np.dot(np.transpose(A1), D2) * sign1  

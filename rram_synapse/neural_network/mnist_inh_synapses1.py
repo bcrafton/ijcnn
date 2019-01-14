@@ -11,7 +11,7 @@ parser.add_argument('--lr', type=float, default=1e-2)
 parser.add_argument('--batch_size', type=int, default=50)
 parser.add_argument('--examples', type=int, default=60000)
 parser.add_argument('--scale', type=float, default=100.)
-parser.add_argument('--low', type=float, default=1./100e6)
+parser.add_argument('--low', type=float, default=0.01)
 args = parser.parse_args()
 
 LAYER1 = 784
@@ -61,14 +61,16 @@ high = args.low * args.scale
 
 #######################################
 
-weights1 = np.ones(shape=(LAYER1, LAYER2)) * (low / 2.)
+# weights1 = np.ones(shape=(LAYER1, LAYER2)) * (0.5)
+weights1 = np.random.uniform(low=low, high=high, size=(LAYER1, LAYER2))
 bias1 = np.zeros(shape=LAYER2)
-rate1 = 0.75
+rate1 = 0.6
 sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
-weights2 = np.ones(shape=(LAYER2, LAYER3)) * (low / 2.)
+# weights2 = np.ones(shape=(LAYER2, LAYER3)) * (0.5)
+weights2 = np.random.uniform(low=low, high=high, size=(LAYER2, LAYER3))
 bias2 = np.zeros(shape=LAYER3)
-rate2 = 0.75
+rate2 = 0.6
 sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
 
 # hi = 1. / np.sqrt(LAYER2)
@@ -77,16 +79,26 @@ sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-r
 
 # thinking b2 should be positive since w2 is positive.
 # problem is we include the sign when we send back with w2.
-b2 = np.random.uniform(low=low, high=high, size=(LAYER2, LAYER3))
+# b2 = np.random.uniform(low=low, high=high, size=(LAYER2, LAYER3))
+b2 = weights2 * sign2
 
 #######################################
 
 for epoch in range(args.epochs):
     print ("epoch: %d/%d" % (epoch, args.epochs))
     
+    # print (b2)
+    
     ######################################################
     correct = 0
     for ex in range(0, args.examples, args.batch_size):
+        assert(np.all(np.sign(b2) == np.sign(weights2 * sign2)))
+        # b2 = weights2 * sign2
+        # print (np.average(b2), np.std(b2))
+
+        pre1 = weights1
+        pre2 = weights2
+    
         start = ex 
         stop = ex + args.batch_size
     
@@ -104,24 +116,37 @@ for epoch in range(args.epochs):
         correct += np.sum(np.argmax(A3, axis=1) == np.argmax(labels, axis=1))
         
         D3 = A3 - labels
-        D2 = np.dot(D3, np.transpose(weights2 * sign2)) * drelu(A2)
+        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
         
         DW2 = np.dot(np.transpose(A2), D3) * sign2 # is this correct ? 
         DB2 = np.sum(D3, axis=0) 
         
         DW1 = np.dot(np.transpose(A1), D2) * sign1 # is this correct ? 
         DB1 = np.sum(D2, axis=0)
-        
-        # weights2 = np.clip(weights2 - args.lr * DW2, low, high)
-        # weights1 = np.clip(weights1 - args.lr * DW1, low, high)
 
-        weights2 = np.clip(weights2 - args.lr * DW2, .01, 1.)
-        weights1 = np.clip(weights1 - args.lr * DW1, .01, 1.)
+        weights2 = np.clip(weights2 - args.lr * DW2, 0.01, 1.)
+        weights1 = np.clip(weights1 - args.lr * DW1, 0.01, 1.)
 
         bias2 = bias2 - args.lr * DB2
         bias1 = bias1 - args.lr * DB1
+
+        post1 = weights1 
+        post2 = weights2
+        DR1 = pre1 - post1
+        DR2 = pre2 - post2
         
-    train_acc = 1. * correct / ex
+    print (ex)
+    print ("Z2  %0.10f %0.10f %0.10f" % (np.std(Z2),  np.min(Z2),  np.max(Z2)))
+    print ("A2  %0.10f %0.10f %0.10f" % (np.std(A2),  np.min(A2),  np.max(A2)))
+    print ("Z3  %0.10f %0.10f %0.10f" % (np.std(Z3),  np.min(Z3),  np.max(Z3)))
+    print ("A3  %0.10f %0.10f %0.10f" % (np.std(A3),  np.min(A3),  np.max(A3)))
+    print (np.min(post2), np.max(post2), np.average(post2), np.std(post2))
+    print (np.min(post1), np.max(post1), np.average(post1), np.std(post1))
+    print (np.min(DR2), np.max(DR2), np.average(DR2), np.std(DR2))
+    print (np.min(DR1), np.max(DR1), np.average(DR1), np.std(DR1))
+    print ()
+        
+    train_acc = 1. * correct / (ex + 1)
     ######################################################
     correct = 0
 

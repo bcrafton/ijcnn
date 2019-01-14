@@ -35,31 +35,26 @@ vc = np.reshape(vc, (-1, 1))
 points = np.concatenate((vc, vg), axis=1)
 i3 = fit2(points)
 
-# normal_i = (i1 / np.max(i1))
-# print (np.concatenate((normal_i, vg), axis=1))
+##############################
 
-# vg = np.reshape(vg, (-1))
-# i1 = np.reshape(i1, (-1))
+vg = vg[30:]
+i1 = i1[30:]
 
-vd = vd[32:101]
-vg = vg[32:101]
-# i1 = i1[32:101]
-
-points = np.concatenate((vd, vg), axis=1)
-i1 = fit1(points)
+vg = np.reshape(vg, (-1))
+i1 = np.reshape(i1, (-1))
 
 # fit = optimize.curve_fit(lambda t, a, b, c: a * np.exp(b*t) + c, vg, i1)
-# fit_i1 = 2.24156665e-07*np.exp(1.18705624e+00*vg) + -3.39535853e-07
+# fit = optimize.curve_fit(lambda t, a, b, c: np.log(t / a - c) / b, i1, vg)
 # print (fit)
-# plt.plot(vg, fit_i1, label='fit')
+# fit_i1 = fit[0][0] * (fit[0][1] * i1) ** 2 + fit[0][2]
 
-vg = 1. / (2.24156665e-07*np.exp(1.18705624e+00*vg) + -3.39535853e-07)
-print (vg)
+fit = np.polyfit(i1, vg, 4)
+val = np.polyval(fit, i1)
 
-# plt.plot(vg, i1, label='i1')
-
-# plt.legend()
-# plt.show()
+plt.plot(i1, vg, label='i1')
+plt.plot(i1, val, label='fit')
+plt.legend()
+plt.show()
 
 ######################################
 
