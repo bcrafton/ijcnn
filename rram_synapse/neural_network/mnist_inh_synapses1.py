@@ -15,7 +15,7 @@ parser.add_argument('--low', type=float, default=0.01)
 args = parser.parse_args()
 
 LAYER1 = 784
-LAYER2 = 400
+LAYER2 = 100
 LAYER3 = 10
 
 TRAIN_EXAMPLES = 60000
@@ -104,19 +104,18 @@ for epoch in range(args.epochs):
     
         A1 = x_train[start:stop]
         Z2 = np.dot(A1, weights1 * sign1) # + bias1
-        A2 = relu(Z2)
-        # A2 = (1. / np.max(A2)) * A2
-        # print (A2)
+        # A2 = relu(Z2 / np.max(Z2))
+        # A2 = relu(Z2)
+        A2 = sigmoid(Z2)
         Z3 = np.dot(A2, weights2 * sign2) # + bias2
         A3 = softmax(Z3)
-        # print (A3)
         
         labels = y_train[start:stop]
         
         correct += np.sum(np.argmax(A3, axis=1) == np.argmax(labels, axis=1))
         
         D3 = A3 - labels
-        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
+        D2 = np.dot(D3, np.transpose(weights2 * sign2)) * dsigmoid(A2) # * drelu(A2)
         
         DW2 = np.dot(np.transpose(A2), D3) * sign2 # is this correct ? 
         DB2 = np.sum(D3, axis=0) 
@@ -152,8 +151,9 @@ for epoch in range(args.epochs):
 
     A1 = x_test
     Z2 = np.dot(A1, weights1 * sign1) # + bias1
-    A2 = relu(Z2)
-    # A2 = (1. / np.max(A2)) * A2
+    # A2 = relu(Z2 / np.max(Z2))
+    # A2 = relu(Z2)
+    A2 = sigmoid(Z2)
     Z3 = np.dot(A2, weights2 * sign2) # + bias2
     A3 = softmax(Z3)
     

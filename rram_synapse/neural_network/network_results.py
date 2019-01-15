@@ -15,8 +15,8 @@ epochs = [100]
 # dts = [3e-4, 1e-4, 3e-5, 1e-5]
 # dt_scales = [2., 4., 8.]
 
-dts = [3e-5, 1e-5, 3e-6, 1e-6]
-dt_scales = [4., 8., 10.]
+dts = [3e-4, 1e-4, 3e-5, 1e-5]
+dt_scales = [8.]
 steps = [1]
 
 runs = []
@@ -27,7 +27,7 @@ for epoch in epochs:
                 runs.append((epoch, dt, dt_scale, step))
 
 num_runs = len(runs)
-parallel_runs = 12
+parallel_runs = 4
 
 for run in range(0, num_runs, parallel_runs):
     threads = []

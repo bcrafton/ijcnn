@@ -4,7 +4,7 @@ import pickle
 import keras
 import matplotlib.pyplot as plt
 import argparse
-from Synapses import Synapses
+from Synapses1 import Synapses
 from collections import deque
 from scipy.interpolate import interp1d
 np.set_printoptions(threshold=np.nan)
@@ -155,12 +155,18 @@ LAYER1 = 784
 LAYER2 = 100
 LAYER3 = 10
 
-weights1 = Synapses(shape=(LAYER1, LAYER2), rate=0.75)
+w1 = np.load('weights1.npy')
+s1 = np.load('sign1.npy')
+
+w2 = np.load('weights2.npy')
+s2 = np.load('sign2.npy')
+
+weights1 = Synapses(shape=(LAYER1, LAYER2), sign=s1, weights=w1)
 bias1 = np.zeros(shape=(LAYER2))
 # rate1 = 0.75
 # sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
-weights2 = Synapses(shape=(LAYER2, LAYER3), rate=0.75)
+weights2 = Synapses(shape=(LAYER2, LAYER3), sign=s2, weights=w2)
 bias2 = np.zeros(shape=(LAYER3))
 # rate2 = 0.75
 # sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
@@ -218,6 +224,7 @@ for epoch in range(args.epochs):
         ANS = y_train[ex]
         E = A3 - ANS
         
+        '''
         D3 = E
         # this does actually evaluate to zero when all weights are the same AND error is 9 0.1 and 1 0.9!
         D2 = np.dot(D3, np.transpose(1. / weights2.R * weights2.sign)) * drelu(A2)
@@ -241,7 +248,7 @@ for epoch in range(args.epochs):
         y = backward_scale(x)
         Vg[idx] = y
         
-        Vc = 1.0 * (D3 > 0.) + -0.25 * (D3 < 0.)
+        Vc = 1.0 * (D3 > 0.) + -1.0 * (D3 < 0.)
         
         for step in range(args.step):
             I = weights2.step(Vd, Vg, Vc, args.dt * args.dt_scale * (1. / float(args.step)), fit=2)
@@ -264,7 +271,7 @@ for epoch in range(args.epochs):
         y = backward_scale(x)
         Vg[idx] = y
         
-        Vc = 1.0 * (D2 > 0.) + -0.25 * (D2 < 0.)
+        Vc = 1.0 * (D2 > 0.) + -1.0 * (D2 < 0.)
         
         for step in range(args.step):
             I = weights1.step(Vd, Vg, Vc, args.dt * (1. / float(args.step)), fit=2)
@@ -294,10 +301,12 @@ for epoch in range(args.epochs):
         # print (ratio1)
         # if its happening bc the memristor rails out then that shudnt count
         # assert(ratio1 >= 0.99)
-
+        '''
         ##############################
         if ((ex + 1) % 1000 == 0):
             acc = 1.0 * correct / (ex + 1)
+            print (acc)
+            '''
             print ("%d: accuracy: %f last 100: %f" % (ex, acc, np.average(count)))
             print ("Z2  %0.10f %0.10f %0.10f" % (np.std(Z2),  np.min(Z2),  np.max(Z2)))
             print ("A2  %0.10f %0.10f %0.10f" % (np.std(A2),  np.min(A2),  np.max(A2)))
@@ -308,8 +317,9 @@ for epoch in range(args.epochs):
             print (np.min(DR2 / 1e6), np.max(DR2 / 1e6), np.average(DR2 / 1e6), np.std(DR2 / 1e6))
             print (np.min(DR1 / 1e6), np.max(DR1 / 1e6), np.average(DR1 / 1e6), np.std(DR1 / 1e6))
             print ()
+            '''
         ##############################
-
+        
 
     
     

@@ -6,6 +6,8 @@ from scipy.interpolate import interp1d
 
 ############################################################################
 
+# we need to make this simpler like we did with the current() func
+
 try:
     import cPickle as pickle
 except ImportError:
@@ -16,6 +18,8 @@ with open('fit1.pkl', 'rb') as f:
     
 with open('fit2.pkl', 'rb') as f:
     fit2 = pickle.load(f)
+
+############################################################################
 
 vg = np.linspace(0., 1., 101)
 vg = np.reshape(vg, (-1, 1))
@@ -34,11 +38,21 @@ i = np.reshape(i, (-1))
 f = interp1d(i, vg)
 
 min_i = np.min(i)
-target = np.linspace(0.0001, 1.0) * min_i
+target = np.linspace(0.01, 1., 101) * min_i
 val = f(target)
 
-plt.plot(i, vg, label='vg')
-plt.plot(target, val, label='vg fit')
+############################################################################
+
+vg = val
+vg = np.reshape(vg, (-1, 1))
+
+points = np.concatenate((vc, vg), axis=1)
+
+i = fit2(points)
+
+############################################################################
+
+plt.plot(i, np.linspace(0.01, 1., 101), label='vg')
 plt.legend()
 plt.show()
 
