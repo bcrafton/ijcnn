@@ -3,7 +3,7 @@
 addpath('../HspiceToolbox/');
 colordef none;
 
-sig = loadsig('synapse_sweep8.sw0');
+sig = loadsig('forward.sw0');
 lssig(sig);
 
 vd     = evalsig(sig, 'v_vd');
