@@ -25,7 +25,8 @@ class Synapses:
         self.RON = 1e6
         self.ROFF = 100e6
         self.P = 5            
-        self.W = np.ones(shape=self.shape) * self.W0
+        # self.W = np.ones(shape=self.shape) * self.W0
+        self.W = np.random.uniform(low=0., high=10e-9, size=self.shape)
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         
         # so the idea with sign is that we flip the memristor terminals so that is gets the correct gradient

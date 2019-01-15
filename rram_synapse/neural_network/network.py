@@ -4,6 +4,7 @@ import pickle
 import keras
 import matplotlib.pyplot as plt
 import argparse
+import sys
 from Synapses import Synapses
 from collections import deque
 from scipy.interpolate import interp1d
@@ -28,9 +29,10 @@ with open('fit2.pkl', 'rb') as f:
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--epochs', type=int, default=1)
-parser.add_argument('--dt', type=float, default=1e-5)
+parser.add_argument('--dt', type=float, default=1e-3)
 parser.add_argument('--dt_scale', type=float, default=8.)
 parser.add_argument('--step', type=int, default=1)
+parser.add_argument('--hidden', type=int, default=1000)
 args = parser.parse_args()
 
 print (args)
@@ -152,15 +154,15 @@ def drelu(x):
 #######################################
 
 LAYER1 = 784
-LAYER2 = 100
+LAYER2 = args.hidden
 LAYER3 = 10
 
-weights1 = Synapses(shape=(LAYER1, LAYER2), rate=0.75)
+weights1 = Synapses(shape=(LAYER1, LAYER2), rate=0.6)
 bias1 = np.zeros(shape=(LAYER2))
 # rate1 = 0.75
 # sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
-weights2 = Synapses(shape=(LAYER2, LAYER3), rate=0.75)
+weights2 = Synapses(shape=(LAYER2, LAYER3), rate=0.6)
 bias2 = np.zeros(shape=(LAYER3))
 # rate2 = 0.75
 # sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
@@ -170,7 +172,7 @@ high = 1e-6
 b2 = np.random.uniform(low=low, high=high, size=(LAYER2, LAYER3))
 #######################################
 
-count = deque(maxlen=100)
+count = deque(maxlen=1000)
 
 for epoch in range(args.epochs):
     print ("epoch: " + str(epoch + 1) + "/" + str(args.epochs))
@@ -298,7 +300,7 @@ for epoch in range(args.epochs):
         ##############################
         if ((ex + 1) % 1000 == 0):
             acc = 1.0 * correct / (ex + 1)
-            print ("%d: accuracy: %f last 100: %f" % (ex, acc, np.average(count)))
+            print ("%d: accuracy: %f last 1000: %f" % (ex, acc, np.average(count)))
             print ("Z2  %0.10f %0.10f %0.10f" % (np.std(Z2),  np.min(Z2),  np.max(Z2)))
             print ("A2  %0.10f %0.10f %0.10f" % (np.std(A2),  np.min(A2),  np.max(A2)))
             print ("Z3  %0.10f %0.10f %0.10f" % (np.std(Z3),  np.min(Z3),  np.max(Z3)))
@@ -308,6 +310,7 @@ for epoch in range(args.epochs):
             print (np.min(DR2 / 1e6), np.max(DR2 / 1e6), np.average(DR2 / 1e6), np.std(DR2 / 1e6))
             print (np.min(DR1 / 1e6), np.max(DR1 / 1e6), np.average(DR1 / 1e6), np.std(DR1 / 1e6))
             print ()
+            sys.stdout.flush()
         ##############################
 
 
