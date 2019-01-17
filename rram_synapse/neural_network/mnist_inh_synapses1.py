@@ -15,7 +15,7 @@ parser.add_argument('--low', type=float, default=0.01)
 args = parser.parse_args()
 
 LAYER1 = 784
-LAYER2 = 100
+LAYER2 = 1000
 LAYER3 = 10
 
 TRAIN_EXAMPLES = 60000
@@ -143,6 +143,12 @@ for epoch in range(args.epochs):
     print (np.min(post1), np.max(post1), np.average(post1), np.std(post1))
     print (np.min(DR2), np.max(DR2), np.average(DR2), np.std(DR2))
     print (np.min(DR1), np.max(DR1), np.average(DR1), np.std(DR1))
+
+    print (np.average(DR2 * (DR2 < 0) / 1e6), np.std(DR2 * (DR2 < 0) / 1e6))
+    print (np.average(DR1 * (DR1 < 0) / 1e6), np.std(DR1 * (DR1 < 0) / 1e6))
+    print (np.average(DR2 * (DR2 > 0) / 1e6), np.std(DR2 * (DR2 > 0) / 1e6))
+    print (np.average(DR1 * (DR1 > 0) / 1e6), np.std(DR1 * (DR1 > 0) / 1e6))
+
     print ()
         
     train_acc = 1. * correct / (ex + 1)

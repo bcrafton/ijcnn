@@ -3,9 +3,9 @@ import numpy as np
 import os
 import threading
 
-def run_command(epoch, dt, dt_scale, step, hidden):
-    name = './results/dt_%0.10f_dt_scale_%f_step_%d_hidden_%d' % (dt, dt_scale, step, hidden)
-    cmd = "python network.py --epochs %d --dt %0.10f --dt_scale %f --step %d --hidden %d > %s" % (epoch, dt, dt_scale, step, hidden, name)
+def run_command(epoch, dt, dt_scale, step, hidden, vc_scale):
+    name = './results/dt_%0.10f_dt_scale_%f_step_%d_hidden_%d_vc_scale_%f' % (dt, dt_scale, step, hidden, vc_scale)
+    cmd = "python network.py --epochs %d --dt %0.10f --dt_scale %f --step %d --hidden %d --vc_scale %f > %s" % (epoch, dt, dt_scale, step, hidden, vc_scale, name)
     os.system(cmd)
     return
 
@@ -18,7 +18,8 @@ epochs = [100]
 dts = [3e-3, 1e-3, 3e-4]
 dt_scales = [8.]
 steps = [1]
-hiddens = [1000]
+hiddens = [100]
+vc_scales = [0.25, 0.4, 0.6]
 
 runs = []
 for epoch in epochs:
@@ -26,7 +27,8 @@ for epoch in epochs:
         for dt_scale in dt_scales:
             for step in steps:
                 for hidden in hiddens:
-                    runs.append((epoch, dt, dt_scale, step, hidden))
+                    for vc_scale in vc_scales:
+                        runs.append((epoch, dt, dt_scale, step, hidden, vc_scale))
 
 num_runs = len(runs)
 parallel_runs = 3

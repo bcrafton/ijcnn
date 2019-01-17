@@ -7,7 +7,7 @@ import argparse
 from Synapses1 import Synapses
 from collections import deque
 from scipy.interpolate import interp1d
-np.set_printoptions(threshold=np.nan)
+np.set_printoptions(threshold=np.inf)
 
 np.random.seed(0)
 
@@ -152,7 +152,7 @@ def drelu(x):
 #######################################
 
 LAYER1 = 784
-LAYER2 = 100
+LAYER2 = 1000
 LAYER3 = 10
 
 w1 = np.load('weights1.npy')
@@ -220,104 +220,11 @@ for epoch in range(args.epochs):
             count.append(1)
         else:
             count.append(0)
-        
-        ANS = y_train[ex]
-        E = A3 - ANS
-        
-        '''
-        D3 = E
-        # this does actually evaluate to zero when all weights are the same AND error is 9 0.1 and 1 0.9!
-        D2 = np.dot(D3, np.transpose(1. / weights2.R * weights2.sign)) * drelu(A2)
 
-        
-        # this wont do anything because we scale it to be [0.45, 1] anyways.
-        DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3)) * weights2.sign # / 1e6
-        DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2)) * weights1.sign 
-        ##############################
-        
-        ##############################
-        Vd = np.zeros(shape=(LAYER2))
-        
-        Vg = np.absolute(DW2)
-        # scale = vscale_x / np.max(Vg)
-        # Vg = scale * Vg + (Vg > 0) * vscale_y
-        
-        Vg = Vg / np.max(Vg)
-        idx = np.where(Vg > 0.)
-        x = np.clip(Vg[idx] * back_min, back_min, back_max)
-        y = backward_scale(x)
-        Vg[idx] = y
-        
-        Vc = 1.0 * (D3 > 0.) + -1.0 * (D3 < 0.)
-        
-        for step in range(args.step):
-            I = weights2.step(Vd, Vg, Vc, args.dt * args.dt_scale * (1. / float(args.step)), fit=2)
-        
-        # DO = np.sum(I, axis=0)
-        # print (DO)
-        ##############################
-
-        ##############################
-        Vd = np.zeros(shape=(LAYER1))
-        
-        Vg = np.absolute(DW1)
-        
-        # scale = vscale_x / np.max(Vg)
-        # Vg = scale * Vg + (Vg > 0) * vscale_y
-        
-        Vg = Vg / np.max(Vg)
-        idx = np.where(Vg > 0.)
-        x = np.clip(Vg[idx] * back_min, back_min, back_max)
-        y = backward_scale(x)
-        Vg[idx] = y
-        
-        Vc = 1.0 * (D2 > 0.) + -1.0 * (D2 < 0.)
-        
-        for step in range(args.step):
-            I = weights1.step(Vd, Vg, Vc, args.dt * (1. / float(args.step)), fit=2)
-        
-        # DO = np.sum(I, axis=0)
-        # print (DO)
-        ##############################
-
-        ##############################
-        post1 = weights1.R
-        post2 = weights2.R
-
-        DR2 = pre2 - post2
-        sign_DR2 = np.sign(-DR2)
-        sign_DW2 = np.sign(DW2)
-        num2 = np.sum(np.absolute(DW2) > 0)
-        ratio2 = np.sum(sign_DR2 == sign_DW2) / num2
-        # print (ratio2)
-        # if its happening bc the memristor rails out then that shudnt count
-        # assert(ratio2 >= 0.99)
-
-        DR1 = pre1 - post1
-        sign_DR1 = np.sign(-DR1)
-        sign_DW1 = np.sign(DW1)
-        num1 = np.sum(np.absolute(DW1) > 0)
-        ratio1 = np.sum(sign_DR1 == sign_DW1) / num1
-        # print (ratio1)
-        # if its happening bc the memristor rails out then that shudnt count
-        # assert(ratio1 >= 0.99)
-        '''
         ##############################
         if ((ex + 1) % 1000 == 0):
             acc = 1.0 * correct / (ex + 1)
             print (acc)
-            '''
-            print ("%d: accuracy: %f last 100: %f" % (ex, acc, np.average(count)))
-            print ("Z2  %0.10f %0.10f %0.10f" % (np.std(Z2),  np.min(Z2),  np.max(Z2)))
-            print ("A2  %0.10f %0.10f %0.10f" % (np.std(A2),  np.min(A2),  np.max(A2)))
-            print ("Z3  %0.10f %0.10f %0.10f" % (np.std(Z3),  np.min(Z3),  np.max(Z3)))
-            print ("A3  %0.10f %0.10f %0.10f" % (np.std(A3),  np.min(A3),  np.max(A3)))
-            print (np.min(post2 / 1e6), np.max(post2 / 1e6), np.average(post2 / 1e6), np.std(post2 / 1e6))
-            print (np.min(post1 / 1e6), np.max(post1 / 1e6), np.average(post1 / 1e6), np.std(post1 / 1e6))
-            print (np.min(DR2 / 1e6), np.max(DR2 / 1e6), np.average(DR2 / 1e6), np.std(DR2 / 1e6))
-            print (np.min(DR1 / 1e6), np.max(DR1 / 1e6), np.average(DR1 / 1e6), np.std(DR1 / 1e6))
-            print ()
-            '''
         ##############################
         
 
