@@ -20,11 +20,10 @@ try:
 except ImportError:
     import pickle
 
-with open('fit1.pkl', 'rb') as f:
-    fit1 = pickle.load(f)
-    
-with open('fit2.pkl', 'rb') as f:
-    fit2 = pickle.load(f)
+with open('../model/forward/forward.pkl', 'rb') as f:
+    forward = pickle.load(f)
+with open('../model/backward/backward.pkl', 'rb') as f:
+    backward = pickle.load(f)
 
 #######################################
 
@@ -58,29 +57,19 @@ vscale_x = 1. - vscale_y
 (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
 
 #######################################
-
 y_train = keras.utils.to_categorical(y_train, NUM_CLASSES)
 
 x_train = np.reshape(x_train, (TRAIN_EXAMPLES, 784))
 x_train = x_train.astype('float32')
 
 x_train = x_train / np.max(x_train)
-
-# scale = vscale_x / np.max(x_train)
-# x_train = scale * x_train + (x_train > 0) * vscale_y
-
 #######################################
-
 y_test = keras.utils.to_categorical(y_test, NUM_CLASSES)
 
 x_test = np.reshape(x_test, (TEST_EXAMPLES, 784))
 x_test = x_test.astype('float32')
 
 x_test = x_test / np.max(x_test)
-
-# scale = vscale_x / np.max(x_test)
-# x_test = scale * x_test + (x_test > 0) * vscale_y
-
 #######################################
 vg = np.linspace(0., 1., 101)
 vg = np.reshape(vg, (-1, 1))
@@ -89,7 +78,7 @@ vd = np.ones(shape=101)
 vd = np.reshape(vd, (-1, 1))
 
 points = np.concatenate((vd, vg), axis=1)
-i = fit1(points)
+i = forward(points)
 forward_max = np.max(i)
 forward_min = np.min(i)
 
@@ -121,7 +110,7 @@ vc = np.ones(shape=101)
 vc = np.reshape(vc, (-1, 1))
 
 points = np.concatenate((vc, vg), axis=1)
-i = fit2(points)
+i = backward(points)
 back_max = np.max(i)
 back_min = np.min(i)
 
@@ -132,16 +121,7 @@ i = np.reshape(i, (-1))
 
 backward_scale = interp1d(i, vg)
 #######################################
-
-'''
 def softmax(x):
-    e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
-    return e_x / np.sum(e_x, axis=1, keepdims=True)
-'''
-
-def softmax(x):
-    # may need scale smaller than this.
-    # although this is exactly what we used in the other one.
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum()
 
@@ -157,7 +137,6 @@ def relu(x):
 def drelu(x):
     # USE A NOT Z
     return 1.0 * (x > 0)
-
 #######################################
 
 LAYER1 = 784
@@ -166,13 +145,9 @@ LAYER3 = 10
 
 weights1 = Synapses(shape=(LAYER1, LAYER2), rate=args.rate)
 bias1 = np.zeros(shape=(LAYER2))
-# rate1 = 0.75
-# sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
 weights2 = Synapses(shape=(LAYER2, LAYER3), rate=args.rate)
 bias2 = np.zeros(shape=(LAYER3))
-# rate2 = 0.75
-# sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
 
 low = 1e-8
 high = 1e-6
@@ -203,7 +178,7 @@ for epoch in range(args.epochs):
         Vg = np.repeat(np.reshape(A1, (-1, 1)), LAYER2, axis=1) 
         Vc = np.zeros(shape=(LAYER2))
         
-        I = weights1.step(Vd, Vg, Vc, 1e-12, fit=1) # * sign2
+        I = weights1.step(Vd, Vg, Vc, 1e-12, forward=1) # * sign2
         Z2 = np.sum(I, axis=0) * 2.6
         A2 = relu(Z2 / np.max(Z2))
         ##############################
@@ -219,7 +194,7 @@ for epoch in range(args.epochs):
         Vg = np.repeat(np.reshape(A2_scaled, (-1, 1)), LAYER3, axis=1) 
         Vc = np.zeros(shape=(LAYER3))
         
-        I = weights2.step(Vd, Vg, Vc, 1e-12, fit=1) # * sign2
+        I = weights2.step(Vd, Vg, Vc, 1e-12, forward=1) # * sign2
         Z3 = np.sum(I, axis=0) * 2.6
         A3 = softmax(Z3 * 1e6)
         ##############################
@@ -277,7 +252,7 @@ for epoch in range(args.epochs):
         
         Vc = 1.0 * (D3 > 0.) + -1.0 * (D3 < 0.)
         
-        I = weights2.step(Vd, Vg, Vc, args.dt, fit=2)
+        I = weights2.step(Vd, Vg, Vc, args.dt, forward=0)
         ##############################
         I = -I
         # print (I / np.max(np.absolute(I)))
@@ -297,7 +272,7 @@ for epoch in range(args.epochs):
         
         Vc = 1.0 * (D2 > 0.) + -1.0 * (D2 < 0.)
         
-        I = weights1.step(Vd, Vg, Vc, args.dt, fit=2)
+        I = weights1.step(Vd, Vg, Vc, args.dt, forward=0)
         ##############################
         # weights1.R = 1. / w1
         # weights2.R = 1. / w2

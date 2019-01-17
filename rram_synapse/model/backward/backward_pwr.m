@@ -11,8 +11,8 @@ p      = evalsig(sig, 'p_vsvc');
 pr     = evalsig(sig, 'p_rmem');
 pn     = evalsig(sig, 'p_mnmos');
 
-csvwrite('backward_vg.csv',     vg);
-csvwrite('backward_r.csv',      r);
-csvwrite('backward_p.csv',      p);
-csvwrite('backward_pr.csv',     pr);
-csvwrite('backward_pn.csv',     pn);
+csvwrite('backward_pwr_vg.csv',     vg);
+csvwrite('backward_pwr_r.csv',      r);
+csvwrite('backward_pwr_p.csv',      p);
+csvwrite('backward_pwr_pr.csv',     pr);
+csvwrite('backward_pwr_pn.csv',     pn);

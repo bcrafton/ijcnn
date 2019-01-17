@@ -11,14 +11,14 @@ except ImportError:
 class Synapses:
     
     def __init__(self, shape, rate):
-        with open('fit1.pkl', 'rb') as f:
-            self.fit1 = pickle.load(f)
-        with open('fit2.pkl', 'rb') as f:
-            self.fit2 = pickle.load(f)
-        with open('forward.pkl', 'rb') as f:
+        with open('../model/forward/forward.pkl', 'rb') as f:
             self.forward = pickle.load(f)
-        with open('backward.pkl', 'rb') as f:
+        with open('../model/forward/forward_pwr.pkl', 'rb') as f:
+            self.forward_pwr = pickle.load(f)
+        with open('../model/backward/backward.pkl', 'rb') as f:
             self.backward = pickle.load(f)
+        with open('../model/backward/backward_pwr.pkl', 'rb') as f:
+            self.backward_pwr = pickle.load(f)
             
         self.shape = shape
         self.input_size = self.shape[0]
@@ -38,7 +38,7 @@ class Synapses:
         self.rate = rate
         self.sign = np.random.choice([-1., 1.], size=(self.shape), replace=True, p=[1.-self.rate, self.rate])
 
-    def step(self, Vd, Vg, Vc, dt, fit=1):
+    def step(self, Vd, Vg, Vc, dt, forward=1):
     
         assert(np.shape(Vd) == (self.input_size,))
         assert(np.shape(Vg) == self.shape)
@@ -58,14 +58,14 @@ class Synapses:
 
         r = np.reshape(self.R, (-1, 1))
         
-        if fit == 1:
+        if forward == 1:
             # points = np.concatenate((Vg, r), axis=1)
             # p = self.forward(points)
             
             # print (np.sum(p))
             
             points = np.concatenate((Vd, Vg), axis=1)
-            I = self.fit1(points) / r * 1e6
+            I = self.forward(points) / r * 1e6
             I = np.reshape(I, self.shape) * self.sign
             
             return I
@@ -81,7 +81,7 @@ class Synapses:
             Vc = np.absolute(Vc)
             points = np.concatenate((Vc, Vg), axis=1)
             # fit2 produces a negative current!!!
-            I = self.fit2(points) / r * 1e6
+            I = self.backward(points) / r * 1e6
             I = I * sign
             I = np.reshape(I, self.shape) * self.sign
             # I = I * self.R
