@@ -36,6 +36,7 @@ parser.add_argument('--step',     type=int, default=1)
 parser.add_argument('--hidden',   type=int, default=100)
 parser.add_argument('--dfa',      type=int, default=0)
 parser.add_argument('--vc_scale', type=float, default=1.)
+parser.add_argument('--rate',     type=float, default=0.66)
 parser.add_argument('--name',     type=str, default='network')
 args = parser.parse_args()
 
@@ -163,12 +164,12 @@ LAYER1 = 784
 LAYER2 = args.hidden
 LAYER3 = 10
 
-weights1 = Synapses(shape=(LAYER1, LAYER2), rate=0.6)
+weights1 = Synapses(shape=(LAYER1, LAYER2), rate=args.rate)
 bias1 = np.zeros(shape=(LAYER2))
 # rate1 = 0.75
 # sign1 = np.random.choice([-1., 1.], size=(LAYER1, LAYER2), replace=True, p=[1.-rate1, rate1])
 
-weights2 = Synapses(shape=(LAYER2, LAYER3), rate=0.6)
+weights2 = Synapses(shape=(LAYER2, LAYER3), rate=args.rate)
 bias2 = np.zeros(shape=(LAYER3))
 # rate2 = 0.75
 # sign2 = np.random.choice([-1., 1.], size=(LAYER2, LAYER3), replace=True, p=[1.-rate2, rate2])
