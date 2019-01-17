@@ -59,8 +59,8 @@ class Synapses:
         r = np.reshape(self.R, (-1, 1))
         
         if fit == 1:
-            points = np.concatenate((Vg, r), axis=1)
-            p = self.forward(points)
+            # points = np.concatenate((Vg, r), axis=1)
+            # p = self.forward(points)
             
             # print (np.sum(p))
             
@@ -71,8 +71,8 @@ class Synapses:
             return I
             
         else:
-            points = np.concatenate((Vg, r), axis=1)
-            p = self.backward(points)
+            # points = np.concatenate((Vg, r), axis=1)
+            # p = self.backward(points)
             
             # print (np.sum(p))
         

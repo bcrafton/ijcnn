@@ -29,15 +29,19 @@ with open('fit2.pkl', 'rb') as f:
 #######################################
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--epochs', type=int, default=10)
-parser.add_argument('--dt', type=float, default=2e-5)
+parser.add_argument('--epochs',   type=int, default=10)
+parser.add_argument('--dt',       type=float, default=2e-5)
 parser.add_argument('--dt_scale', type=float, default=4.)
-parser.add_argument('--step', type=int, default=1)
-parser.add_argument('--hidden', type=int, default=100)
+parser.add_argument('--step',     type=int, default=1)
+parser.add_argument('--hidden',   type=int, default=100)
+parser.add_argument('--dfa',      type=int, default=0)
 parser.add_argument('--vc_scale', type=float, default=1.)
+parser.add_argument('--name',     type=str, default='network')
 args = parser.parse_args()
 
 print (args)
+
+results = {}
 
 #######################################
 
@@ -179,6 +183,9 @@ count = deque(maxlen=1000)
 max1 = 0.
 max2 = 0.
 
+train_accs = []
+test_accs = []
+
 for epoch in range(args.epochs):
     print ("epoch: " + str(epoch + 1) + "/" + str(args.epochs))
     correct = 0
@@ -229,8 +236,10 @@ for epoch in range(args.epochs):
         E = A3 - ANS
         
         D3 = E
-        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
-        # D2 = np.dot(D3, np.transpose(1. / weights2.R * weights2.sign)) * drelu(A2)
+        if args.dfa:
+            D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
+        else:
+            D2 = np.dot(D3, np.transpose(1. / weights2.R * weights2.sign)) * drelu(A2)
 
         DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3)) * weights2.sign / 1e6
         DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2)) * weights1.sign 
@@ -294,14 +303,20 @@ for epoch in range(args.epochs):
         ##############################
 
         if ((ex + 1) % 1000 == 0):
-            acc = 1.0 * correct / (ex + 1)
+            train_acc = 1.0 * correct / (ex + 1)
             miss_rate = 1.0 * miss / (ex + 1)
-            print ("%d: accuracy: %f last 1000: %f miss %f" % (ex, acc, np.average(count), miss_rate))
+            print ("%d: acc: %f last 1000: %f miss %f" % (ex, train_acc, np.average(count), miss_rate))
+            train_accs.append(train_acc)
             
         ##############################
 
+results = {}
+results['train_acc'] = train_accs
+np.save(args.name, results)
 
-    
+
+
+
     
     
     

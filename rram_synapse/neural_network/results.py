@@ -1,39 +1,48 @@
 
 import numpy as np
 import os
+import copy
 import threading
-
-def run_command(epoch, lr):
-    cmd = "python mnist_inh_synapses.py --epochs %d --lr %0.12f" % (epoch, lr)
-    os.system(cmd)
-    return
+import argparse
 
 ################################################
 
-epochs = [10]
-
-lrs = np.linspace(-10., 0., 12)
-lrs = np.power(10., lrs)
-
-runs = []
-for epoch in epochs:
-    for lr in lrs:
-        runs.append((epoch, lr))
-
-num_runs = len(runs)
-parallel_runs = 12
-
-for run in range(0, num_runs, parallel_runs):
-    threads = []
-    for parallel_run in range(parallel_runs):
-        args = runs[run + parallel_run]
-        t = threading.Thread(target=run_command, args=args)
-        threads.append(t)
-        t.start()
-    for t in threads:
-        t.join()
+def get_perms(param):
+    params = [param]
+    
+    for key in param.keys():
+        val = param[key]
+        if type(val) == list:
+            new_params = []
+            for ii in range(len(val)):
+                for jj in range(len(params)):
+                    new_param = copy.copy(params[jj])
+                    new_param[key] = val[ii]
+                    new_params.append(new_param)
+                    
+            params = new_params
+            
+    return params
 
 ################################################
 
+network = {'benchmark':'network.py', 'epochs':10, 'dt':[2e-5], 'dt_scale':[1.], 'step':1, 'hidden':[100, 300, 500], 'dfa':[0, 1], 'vc_scale':1.}
 
+###############################################
 
+params = [network]
+
+################################################
+
+def get_runs():
+    runs = []
+
+    for param in params:
+        perms = get_perms(param)
+        runs.extend(perms)
+
+    return runs
+
+################################################
+
+        
