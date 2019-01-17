@@ -171,7 +171,7 @@ bias2 = np.zeros(shape=(LAYER3))
 
 low = 1e-8
 high = 1e-6
-b2 = np.random.uniform(low=low, high=high, size=(LAYER2, LAYER3))
+b2 = 1. / weights2.R * weights2.sign
 #######################################
 
 count = deque(maxlen=1000)
@@ -229,7 +229,8 @@ for epoch in range(args.epochs):
         E = A3 - ANS
         
         D3 = E
-        D2 = np.dot(D3, np.transpose(1. / weights2.R * weights2.sign)) * drelu(A2)
+        D2 = np.dot(D3, np.transpose(b2)) * drelu(A2)
+        # D2 = np.dot(D3, np.transpose(1. / weights2.R * weights2.sign)) * drelu(A2)
 
         DW2 = np.dot(A2.reshape(LAYER2, 1), D3.reshape(1, LAYER3)) * weights2.sign / 1e6
         DW1 = np.dot(A1.reshape(LAYER1, 1), D2.reshape(1, LAYER2)) * weights1.sign 

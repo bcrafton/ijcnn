@@ -9,7 +9,7 @@ foot = '.enddata\n'
 d_sweep = np.linspace(1.0, 1.0, 1 )
 g_sweep = np.linspace(0.0, 1.0, 50)
 c_sweep = np.linspace(0.0, 0.0, 1 )
-r_sweep = np.linspace(6,   6,   1 )
+r_sweep = np.linspace(6,   8,   25 )
 r_sweep = np.power(10, r_sweep)
 
 for r in r_sweep:

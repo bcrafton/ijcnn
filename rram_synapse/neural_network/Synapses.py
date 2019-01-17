@@ -15,7 +15,11 @@ class Synapses:
             self.fit1 = pickle.load(f)
         with open('fit2.pkl', 'rb') as f:
             self.fit2 = pickle.load(f)
-
+        with open('forward.pkl', 'rb') as f:
+            self.forward = pickle.load(f)
+        with open('backward.pkl', 'rb') as f:
+            self.backward = pickle.load(f)
+            
         self.shape = shape
         self.input_size = self.shape[0]
         self.output_size = self.shape[1]
@@ -25,8 +29,8 @@ class Synapses:
         self.RON = 1e6
         self.ROFF = 100e6
         self.P = 5            
-        self.W = np.ones(shape=self.shape) * self.W0
-        # self.W = np.random.uniform(low=0., high=10e-9, size=self.shape)
+        # self.W = np.ones(shape=self.shape) * self.W0
+        self.W = np.random.uniform(low=0., high=10e-9, size=self.shape)
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         
         # so the idea with sign is that we flip the memristor terminals so that is gets the correct gradient
@@ -55,12 +59,23 @@ class Synapses:
         r = np.reshape(self.R, (-1, 1))
         
         if fit == 1:
+            points = np.concatenate((Vg, r), axis=1)
+            p = self.forward(points)
+            
+            # print (np.sum(p))
+            
             points = np.concatenate((Vd, Vg), axis=1)
             I = self.fit1(points) / r * 1e6
             I = np.reshape(I, self.shape) * self.sign
+            
             return I
             
         else:
+            points = np.concatenate((Vg, r), axis=1)
+            p = self.backward(points)
+            
+            # print (np.sum(p))
+        
             # fit2 is fucked up for Vc, so we just make it positive and flip the sign afterwards.
             sign = np.sign(Vc)
             Vc = np.absolute(Vc)
@@ -71,8 +86,9 @@ class Synapses:
             I = np.reshape(I, self.shape) * self.sign
             # I = I * self.R
             
-            dwdt = ((self.U * self.R * I) / self.D) 
-            # return dwdt
+            F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
+            dwdt = ((self.U * self.RON * I) / self.D) * F
+            self.W = np.clip(self.W + dwdt * dt, 0., 10e-9)
 
             self.W = np.clip(self.W + dwdt * dt, 0., 10e-9)
             pre = np.copy(self.R)
