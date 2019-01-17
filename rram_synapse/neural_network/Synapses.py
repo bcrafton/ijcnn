@@ -25,8 +25,8 @@ class Synapses:
         self.RON = 1e6
         self.ROFF = 100e6
         self.P = 5            
-        # self.W = np.ones(shape=self.shape) * self.W0
-        self.W = np.random.uniform(low=0., high=10e-9, size=self.shape)
+        self.W = np.ones(shape=self.shape) * self.W0
+        # self.W = np.random.uniform(low=0., high=10e-9, size=self.shape)
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
         
         # so the idea with sign is that we flip the memristor terminals so that is gets the correct gradient
@@ -57,6 +57,9 @@ class Synapses:
         if fit == 1:
             points = np.concatenate((Vd, Vg), axis=1)
             I = self.fit1(points) / r * 1e6
+            I = np.reshape(I, self.shape) * self.sign
+            return I
+            
         else:
             # fit2 is fucked up for Vc, so we just make it positive and flip the sign afterwards.
             sign = np.sign(Vc)
@@ -65,19 +68,17 @@ class Synapses:
             # fit2 produces a negative current!!!
             I = self.fit2(points) / r * 1e6
             I = I * sign
+            I = np.reshape(I, self.shape) * self.sign
+            # I = I * self.R
             
-        I = np.reshape(I, self.shape) * self.sign
+            dwdt = ((self.U * self.R * I) / self.D) 
+            # return dwdt
 
-        F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
-        dwdt = ((self.U * self.RON * I) / self.D) * F
-        self.W = np.clip(self.W + dwdt * dt, 0., 10e-9)
-        
-        # make sure to do this at the end.
-        self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
-        
-        # I = np.sum(I, axis=0)
-        return I
-        
+            self.W = np.clip(self.W + dwdt * dt, 0., 10e-9)
+            pre = np.copy(self.R)
+            self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
+            post = np.copy(self.R)
+            return pre - post
         
         
         

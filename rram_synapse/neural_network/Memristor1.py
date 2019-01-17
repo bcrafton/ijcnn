@@ -30,8 +30,9 @@ class Memristor:
     def step(self, V, dt):
         I = (1. / self.R) * V
 
-        F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
-        dwdt = ((self.U * self.RON * I) / self.D) * F
+        # F = 1 - (2 * (self.W / self.D) - 1) ** (2 * self.P)
+        # dwdt = ((self.U * self.R * I) / self.D) * F
+        dwdt = ((self.U * V) / self.D) 
         self.W = np.clip(self.W + dwdt * dt, 0., 10e-9)
 
         self.R = self.RON * (self.W / self.D) + self.ROFF * (1 - (self.W / self.D))
@@ -39,7 +40,7 @@ class Memristor:
 
         return I
 
-T = 2e-1
+T = 1e-3
 dt = T / 1e3
 steps = int(T / dt) + 1
 Ts = np.linspace(0., T, steps)
@@ -48,7 +49,7 @@ m = Memristor()
 
 for t in Ts:
     i = fit2((1., 1.)) * 1e6 / m.R
-    # i = -fit2((0.25, 1.)) * 1e6 / m.R
+    # i = -fit2((1., 1.)) * 1e6 / m.R
     v = i * m.R
     print (i, v, m.R)
     m.step(v, dt)
