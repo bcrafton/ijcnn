@@ -26,7 +26,7 @@ def get_perms(param):
 
 ################################################
 
-network = {'benchmark':'network.py', 'epochs':10, 'dt':[2e-5], 'dt_scale':[1.], 'step':1, 'hidden':[100, 300, 500], 'dfa':[0, 1], 'vc_scale':1.}
+network = {'benchmark':'network.py', 'epochs':10, 'dt':[1e-4, 3e-4, 1e-5, 3e-5], 'dt_scale':[1.], 'step':1, 'hidden':[100, 300, 500], 'dfa':[1, 0], 'vc_scale':1.}
 
 ###############################################
 
