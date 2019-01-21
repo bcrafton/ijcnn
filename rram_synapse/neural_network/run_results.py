@@ -17,10 +17,10 @@ cmd_args = parser.parse_args()
 
 def run_command(param):
     
-    name = '%s_%f_%f_%d_%d_%d_%f' % (param['benchmark'], param['dt'], param['dt_scale'], param['step'], param['hidden'], param['dfa'], param['vc_scale'])
+    name = '%s_%f_%f_%d_%d_%d_%f_%f' % (param['benchmark'], param['dt'], param['dt_scale'], param['step'], param['hidden'], param['dfa'], param['vc_scale'], param['rate'])
     
-    cmd = "python %s --epochs %d --dt %f --dt_scale %f --step %d --hidden %d --dfa %d --vc_scale %f --name %s" % \
-        (param['benchmark'], param['epochs'], param['dt'], param['dt_scale'], param['step'], param['hidden'], param['dfa'], param['vc_scale'], name)
+    cmd = "python %s --epochs %d --dt %f --dt_scale %f --step %d --hidden %d --dfa %d --vc_scale %f --rate %f --name %s" % \
+        (param['benchmark'], param['epochs'], param['dt'], param['dt_scale'], param['step'], param['hidden'], param['dfa'], param['vc_scale'], param['rate'], name)
 
     if cmd_args.print:
         print (cmd)
