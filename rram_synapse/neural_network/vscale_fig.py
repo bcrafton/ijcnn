@@ -5,7 +5,7 @@ from scipy.integrate import solve_ivp
 from scipy.interpolate import interp1d
 
 ############################################################################
-npoints = 20
+npoints = 1000
 ############################################################################
 
 try:
@@ -13,11 +13,11 @@ try:
 except ImportError:
     import pickle
 
-with open('fit1.pkl', 'rb') as f:
-    fit1 = pickle.load(f)
+with open('../model/forward/forward.pkl', 'rb') as f:
+    forward = pickle.load(f)
     
-with open('fit2.pkl', 'rb') as f:
-    fit2 = pickle.load(f)
+with open('../model/backward/backward.pkl', 'rb') as f:
+    backward = pickle.load(f)
 
 vg = np.linspace(0., 1., npoints)
 vg = np.reshape(vg, (-1, 1))
@@ -35,14 +35,14 @@ def current(X):
     vd = np.reshape(vd, (-1, 1))
     
     points = np.concatenate((vd, vg), axis=1)
-    i = fit1(points)
+    i = forward(points)
     i = np.reshape(i, (-1))
     return i
 
 ############################################################################
 # X 
 
-X = np.linspace(0.01, 1., npoints)
+X = np.linspace(0.001, 1., npoints)
 i_X = current(X)
 ############################################################################
 # A
@@ -67,18 +67,30 @@ plt.rcParams['font.size'] = 10.
 f, ax = plt.subplots(2, 1)
 f.set_size_inches(3.5, 7.)
 
-ax[0].plot(X, X,   label='X',   marker='.', linestyle = 'None')
-ax[0].plot(X, A,   label='A',   marker='.', linestyle = 'None')
+############################################################################
+# ax[0].plot(X, X,   label='X',   marker='.', linestyle = 'None')
+# ax[0].plot(X, A,   label='A',   marker='.', linestyle = 'None')
 # ax[0].plot(X, mac, label='mac', linestyle='--') # '-' for full line
 
-ax[1].plot(X, i_X,   label='i_X',   marker='.', linestyle = 'None')
-ax[1].plot(X, i_A,   label='i_A',   marker='.', linestyle = 'None')
-ax[1].plot(X, i_mac, label='i_mac', linestyle='--') # '-' for full line
-ax[1].ticklabel_format(style='sci', axis='y', scilimits=(0,0))
-ax[1].ticklabel_format(useOffset=False)
-# ax[1].yaxis.set_major_formatter(FormatStrFormatter('10%.0f'))
+ax[0].plot(X, X,   label='X', color='orange')
+ax[0].plot(X, A,   label='A', color='blue')
+ax[0].set_yticklabels([])
+############################################################################
 
-f.savefig('vscale.png', dpi=1000, bbox_inches='tight')
+############################################################################
+# ax[1].plot(X, i_X,   label='i_X',   marker='.', linestyle = 'None')
+# ax[1].plot(X, i_A,   label='i_A',   marker='.', linestyle = 'None')
+ax[1].plot(X, i_mac, label='i_mac', linestyle='--', color='black') # '-' for full line
+
+ax[1].plot(X, i_X,   label='i_X', color='orange')
+ax[1].plot(X, i_A,   label='i_A', color='blue')
+ax[1].set_yticklabels([])
+
+# ax[1].ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+# ax[1].ticklabel_format(useOffset=False)
+# ax[1].yaxis.set_major_formatter(FormatStrFormatter('10%.0f'))
+############################################################################
+f.savefig('vscale.png', dpi=300, bbox_inches='tight')
 ############################################################################
 
 

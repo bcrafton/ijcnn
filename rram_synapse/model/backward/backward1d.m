@@ -2,8 +2,7 @@
 addpath('../HspiceToolbox/');
 colordef none;
 
-sig = loadsig('synapse_sweep8.sw0');
-% sig = loadsig('backward.sw0');
+sig = loadsig('backward.sw0');
 lssig(sig)
 
 vd     = evalsig(sig, 'v_vd');
@@ -23,3 +22,5 @@ csvwrite('backward_vg.csv',     vg);
 csvwrite('backward_vc.csv',     vc);
 csvwrite('backward_r.csv',      r);
 csvwrite('backward_i.csv',      i);
+
+plot(vg, i)
