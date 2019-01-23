@@ -19,15 +19,19 @@ for ii in range(num_runs):
     param = runs[ii]
 
     # figure out the name of the param
-    name = '%s_%f_%f_%d_%d_%d_%f_%f' % (param['benchmark'], param['dt'], param['dt_scale'], param['step'], param['hidden'], param['dfa'], param['vc_scale'], param['rate'])
-
+    name = '%s_%f_%f_%d_%d_%d_%f_%f.npy' % (param['benchmark'], param['dt'], param['dt_scale'], param['step'], param['hidden'], param['dfa'], param['vc_scale'], param['rate'])
+    
     # load the results
     try:
         res = np.load(name).item()
         
-        key = (param['benchmark'], param['dfa'], param['hidden'], transfer)
-        val = max(res['train_acc'])
-
+        key = (param['benchmark'], param['dfa'], param['hidden'])
+        res = res['train_acc']
+        res = np.reshape(res, (-1, 60))
+        res = res[:, -1]
+        
+        val = max(res)
+        print (res)
         print (name, val)
         
         if key in results.keys():
